@@ -11,9 +11,9 @@ reason you can use `zefaker` to automate the process while leveraging the power 
 [Groovy](https://www.groovy-lang.org)!
 
 We created it because we deal with a lot of Excel files (with lots of columns!) 
-and often have to generate files to test the our code that processes these files.
+and often have to generate files to test the code that processes those files.
 
-<small>* - the generated data need not necessarily be random</small>
+_* the generated data need not necessarily be random_
 
 ## Example Usage
 
@@ -40,13 +40,14 @@ columns = [
 generateFrom columns
 ```
 
-Once you have this, you can pass it to the `zefaker` command to generate an excel file,
-the example command below generates a file named `people.xlsx` with a _100 rows_ populated
-with data generated using the faker methods specified in the groovy script:
+Once you have this, you can pass it to the `zefaker` command to generate an Excel file:
 
 ```sh
 $ java -jar zefaker.jar -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
 ```
+
+The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
+with data generated using the faker methods specified in the groovy script.
 
 _Bonus / Shameless plug_: If you're using Java, you can process the generated files _quickly_ and 
 _efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
