@@ -1,0 +1,25 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "net.ltgt.apt-eclipse" version "0.21"
+    id 'application'
+    id 'groovy'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.github.javafaker:javafaker:1.0.2'
+    compile "org.apache.poi:poi:4.1.2"
+    compile "org.apache.poi:poi-ooxml:4.1.2"
+    compile "org.apache.poi:poi-ooxml-schemas:4.1.2"
+    compile 'info.picocli:picocli:4.2.0'
+    implementation 'org.codehaus.groovy:groovy-all:2.5.7'
+}
+
+application {
+    mainClassName = "zefaker.Main"
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
