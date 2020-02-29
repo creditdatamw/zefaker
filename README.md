@@ -101,8 +101,8 @@ After this, the build file will be in `build/libs/zefaker-all.jar` - it is an ex
 This is simple CLI and so far it does what we need, but it can always be improved.
 Here are some ideas:
 
-- Decrease the size of the JAR using Java 9+ modules to strip out stuff we don't need
-- Build a native binary using GraalVM
+- Decrease the size of the JAR using either Java 9+ modules or Proguard to strip out stuff we don't need
+- Build a native binary using [Graal](https://www.graalvm.org/)
 - Handle exceptions raised by/in the input script better
 - Explore using multi-threading to generate the rows
 - Export to CSV?
