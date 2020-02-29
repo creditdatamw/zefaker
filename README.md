@@ -54,8 +54,9 @@ _efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
 
 ## Installation
 
-For now, you have to build a copy locally.
-We will upload a copy on the Releases page, soon.
+Download a copy of `zefaker` from the [Releases](https://github.com/creditdatamw/zefaker/releases) page.
+
+> NOTE: Requires at least Java 8 to be installed
 
 ## Usage
 
@@ -74,11 +75,11 @@ Usage: zefaker -f=PARAM -output=PARAM [-rows=PARAM] [-sheet=PARAM]
 The following are the only methods that are required in the groovy script for 
 Zefaker to run. 
 
-**column(int index, String name)**
+**ColumnDef column(int index, String name)**
 
 This method defines a new Column that has a name and an index (position)
 
-**generateFrom(ColumnDef[] columns)**
+**void generateFrom(ColumnDef[] columns)**
 
 This method actually initiates the generation of the Excel file. If you don't
 call this method you won't actually get any result. 
