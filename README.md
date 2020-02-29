@@ -54,7 +54,8 @@ _efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
 
 ## Installation
 
-Download a copy from the [Releases](https://github.com/creditdatamw/zefaker/releaseas) tab
+For now, you have to build a copy locally.
+We will upload a copy on the Releases page, soon.
 
 ## Usage
 
@@ -70,7 +71,7 @@ Usage: zefaker -f=PARAM -output=PARAM [-rows=PARAM] [-sheet=PARAM]
 
 ### In the Groovy Script
 
-The following are the only methods that are required in teh groovy script for 
+The following are the only methods that are required in the groovy script for 
 Zefaker to run. 
 
 **column(int index, String name)**
@@ -84,7 +85,7 @@ call this method you won't actually get any result.
 
 ## Building
 
-We are using `gradle` for this, so follow the instructions below to build it.
+We are using `Gradle` for this, so follow the instructions below to build it.
 
 ```sh
 $ git clone https://github.com/creditdatamw/zefaker.git
