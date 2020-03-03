@@ -53,7 +53,7 @@ abstract class ZeFaker extends groovy.lang.Script {
             int i = 0
 
             columnDefs.keySet().each {
-                def cell = row.createCell(i)
+                def cell = row.createCell(it.index)
                 cell.setCellValue(it.name)
                 //if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
                 ++i;
