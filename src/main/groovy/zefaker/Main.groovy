@@ -11,6 +11,7 @@ cli.f(type: File, required: true, 'Groovy file with column definitions')
 cli.output(type: String, required: true, 'File to write to, e.g. generated.xlsx')
 cli.sheet(type: String, defaultValue: 'Data', 'Sheet name in the generated Excel file')
 cli.rows(type: Integer, defaultValue: '10', 'Number of rows to generate')
+cli.vvv(type: Boolean, defaultValue: 'false', 'Show verbose output')
 
 def options = cli.parse(args)
 
@@ -24,6 +25,7 @@ config.scriptBaseClass = "zefaker.ZeFaker"
 def groovyShell = new GroovyShell(this.class.classLoader, binding, config)
 
 binding.setProperty("faker", new Faker())
+binding.setProperty("verbose", options.vvv)
 binding.setProperty("sheetName", options.sheet)
 binding.setProperty("maxRows", options.rows)
 binding.setProperty("outputFile", options.output)

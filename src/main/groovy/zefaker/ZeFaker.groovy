@@ -47,12 +47,46 @@ abstract class ZeFaker extends groovy.lang.Script {
         def filePath = Paths.get(outputFile)
 
         def wb = new SXSSFWorkbook(streamingBatchSize)
+        
+        if (verbose) {
+            System.out.println("Generating File: " + filePath)
+            System.out.println("Sheet: " + sheetName)
+            System.out.println("Rows: " + maxRows)
+        }
 
         def fileGenerator = new FileGenerator(filePath,  columnDefs, wb)
 
         new Thread(fileGenerator).start()
 
+        String display = "Generated rows: 0 / " + maxRows
+        
+        if (verbose) {
+            System.out.print(display)
+        }
+
+        int gen = 0
+        while(true) {
+            gen = fileGenerator.generated.get()
+            
+            if (gen >= maxRows) break
+            if (verbose) {
+                System.out.print(repeat("\b", display.length()))
+                display = "Generated rows: " + gen + " / " + maxRows
+                System.out.print(display)
+            }
+        }
+
         latch.await()
+
+        if (verbose) {
+            System.out.print(repeat("\b", display.length()))
+            display = "Generated rows: " + maxRows + " / " + maxRows
+            System.out.print(display)
+        }
+    }
+
+    String repeat(String v, int n) {
+        return Collections.nCopies(n, v).stream().collect(Collectors.joining())
     }
 
     private class FileGenerator extends Runnable {
