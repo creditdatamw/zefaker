@@ -96,15 +96,17 @@ Example: `generateFrom([ (firstName) : { faker -> faker.name().firstName() } ])`
 
 #### Properties
 
-The Groovy script you can modify some variables or properties that affect the 
-output from zefaker. These variables consequently take precendence over the 
-ones specified on the command-line. The following variables are available:
+Inside the Groovy script you can set some variables or properties that affect the 
+output of zefaker. These variables, consequently, take precedence over arguments 
+specified on the command-line. 
 
-* *sheetName* - Change the name of the target Sheet in Excel. Overrides `-sheet`
+The following special variables are available, and are therefore *reserved names*:
+
+* **sheetName** - Change the name of the target Sheet in Excel. Overrides `-sheet`
 * **outputFile** - The name/path of the file to write output to. Overrides `-f`
-* *verbose* - Show verbose output. Overrides `-vvv`
-* *maxRows* - Sets the maximum number of rows to generate in the file. Overrides `-rows`
-* *overwriteExisting* - Whether to overrite an existing file with the new Workbook. Overrides `-x`
+* **verbose** - Show verbose output. Overrides `-vvv`
+* **maxRows** - Sets the maximum number of rows to generate in the file. Overrides `-rows`
+* **overwriteExisting** - Whether to overrite an existing file with the new Workbook. Overrides `-x`
 
 ## Building
 
@@ -126,7 +128,6 @@ Here are some ideas:
 - Decrease the size of the JAR using either Java 9+ modules or Proguard to strip out stuff we don't need
 - Build a native binary using [Graal](https://www.graalvm.org/)
 - Handle exceptions raised by/in the input script better
-- Export to CSV?
 
 ## CONTRIBUTING
 
