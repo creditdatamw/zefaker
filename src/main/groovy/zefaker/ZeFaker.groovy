@@ -113,6 +113,7 @@ abstract class ZeFaker extends groovy.lang.Script {
                 def dateCellStyle = this.wb.createCellStyle()
                 
                 dateCellStyle.setDataFormat(
+                    // TODO: Enable user to specify a date format in the script
                     this.wb.getCreationHelper().createDataFormat().getFormat("yyyy-mm-dd")
                 );
 
@@ -123,7 +124,7 @@ abstract class ZeFaker extends groovy.lang.Script {
                 columnDefs.keySet().each {
                     def cell = row.createCell(it.index)
                     cell.setCellValue(it.name)
-                    //if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
+                    // TODO: if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
                     ++i;
                 }
 

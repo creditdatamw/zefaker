@@ -63,19 +63,27 @@ Download a copy of `zefaker` from the [Releases](https://github.com/creditdatamw
 ### Command Line
 
 ```sh
-Usage: zefaker -f=PARAM -output=PARAM [-rows=PARAM] [-sheet=PARAM]
-    -f=PARAM        Groovy file with column definitions
-    -output=PARAM   File to write to, e.g. generated.xlsx
-    -rows=PARAM     Number of rows to generate
-    -sheet=PARAM    Sheet name in the generated Excel file
+Usage: zefaker [-x] [-vvv] -f=FILE -output=FILE [-rows=ROWS] [-sheet=SHEET]
+  -f=FILE         Groovy file with column definitions
+  -output=FILE    File to write to, e.g. generated.xlsx
+  -rows=ROWS      Number of rows to generate
+  -sheet=SHEET    Sheet name in the generated Excel file
+  -vvv            Show verbose output
+  -x              Overwrite existing file
 ```
 
 ### In the Groovy Script
+
+Within your Groovy script you are required to use the *generateFrom(<map>)* 
+function to generate the Excel file.
+
+#### Methods
 
 The following are the only methods that are required in the groovy script for 
 Zefaker to run. 
 
 **ColumnDef column(int index, String name)**
+
 
 This method defines a new Column that has a name and an index (position)
 
@@ -83,6 +91,20 @@ This method defines a new Column that has a name and an index (position)
 
 This method actually initiates the generation of the Excel file. If you don't
 call this method you won't actually get any result. 
+
+Example: `generateFrom([ (firstName) : { faker -> faker.name().firstName() } ])`
+
+#### Properties
+
+The Groovy script you can modify some variables or properties that affect the 
+output from zefaker. These variables consequently take precendence over the 
+ones specified on the command-line. The following variables are available:
+
+* *sheetName* - Change the name of the target Sheet in Excel. Overrides `-sheet`
+* **outputFile** - The name/path of the file to write output to. Overrides `-f`
+* *verbose* - Show verbose output. Overrides `-vvv`
+* *maxRows* - Sets the maximum number of rows to generate in the file. Overrides `-rows`
+* *overwriteExisting* - Whether to overrite an existing file with the new Workbook. Overrides `-x`
 
 ## Building
 
@@ -104,7 +126,6 @@ Here are some ideas:
 - Decrease the size of the JAR using either Java 9+ modules or Proguard to strip out stuff we don't need
 - Build a native binary using [Graal](https://www.graalvm.org/)
 - Handle exceptions raised by/in the input script better
-- Explore using multi-threading to generate the rows
 - Export to CSV?
 
 ## CONTRIBUTING
@@ -113,4 +134,4 @@ Pull Requests are welcome. If you run into a problem, create an issue and we wil
 
 ---
 
-Copyright (c) Credit Data CRB Ltd
+Copyright (c) 2020, Credit Data CRB Ltd
