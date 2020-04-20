@@ -7,11 +7,18 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.WorkbookUtil
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+
 import java.nio.file.Paths
-import java.util.function.Function
+import java.nio.file.Files
+import java.util.stream.Collectors
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class ZeFaker extends groovy.lang.Script {
     Faker faker
+    int streamingBatchSize = 100
+    protected CountDownLatch latch = new CountDownLatch(1)
 
     class ColumnDef {
         int index
@@ -37,60 +44,93 @@ abstract class ZeFaker extends groovy.lang.Script {
         assert outputFile != null
         assert maxRows >= 1 && maxRows <= Integer.MAX_VALUE
 
-        try {
-            def fos = new FileOutputStream(Paths.get(outputFile).toFile())
-            def wb  = new XSSFWorkbook()
+        def filePath = Paths.get(outputFile)
 
-            def sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(sheetName))
-            def dateCellStyle = wb.createCellStyle()
-            
-            dateCellStyle.setDataFormat(
-                wb.getCreationHelper().createDataFormat().getFormat("yyyy-mm-dd")
-            );
+        def wb = new SXSSFWorkbook(streamingBatchSize)
 
-            // Create file headers
-            def row = sheet.createRow(0)
-            int i = 0
+        def fileGenerator = new FileGenerator(filePath,  columnDefs, wb)
 
-            columnDefs.keySet().each {
-                def cell = row.createCell(it.index)
-                cell.setCellValue(it.name)
-                //if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
-                ++i;
-            }
+        new Thread(fileGenerator).start()
 
-            populateSheet(sheet, columnDefs)
-    
-            wb.write(fos)
-
-            sheet = null
-            wb.close()
-            fos.close()
-        } catch (IOException e) {
-            throw e
-        }
+        latch.await()
     }
 
-    /**
-     * Populate the Sheet using the given column definitions 
-     * @param sheet The sheet to write to
-     * @param columnDefs map of column definitions 
-     */
-    void populateSheet(sheet, columnDefs) {
-        int nextRow = 1
-        int generated = 0
-        while(generated < maxRows) {
-            Row row = sheet.createRow(nextRow);
+    private class FileGenerator extends Runnable {
+        Workbook wb
+        def columnDefs
+        def filePath
+        final AtomicLong generated = new AtomicLong(0)
 
-            columnDefs.each {
-                def col = it.getKey()
-                def fakerFunc = it.getValue()
-                generatedValue = fakerFunc(faker)
-                row.createCell(col.index).setCellValue(generatedValue);
-            }
-
-            nextRow++;
-            generated++;
+        FileGenerator(filePath, columnDefs, workbook) {
+            this.filePath = filePath
+            this.wb = workbook
+            this.columnDefs = columnDefs
         }
-    }
+
+        void run() {
+            try {
+                def fos = Files.newOutputStream(filePath)
+                def sheet = this.wb.createSheet(WorkbookUtil.createSafeSheetName(sheetName))
+                def dateCellStyle = this.wb.createCellStyle()
+                
+                dateCellStyle.setDataFormat(
+                    this.wb.getCreationHelper().createDataFormat().getFormat("yyyy-mm-dd")
+                );
+
+                // Create file headers
+                def row = sheet.createRow(0)
+                int i = 0
+
+                columnDefs.keySet().each {
+                    def cell = row.createCell(it.index)
+                    cell.setCellValue(it.name)
+                    //if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
+                    ++i;
+                }
+
+                try {
+                    populateSheet(sheet, columnDefs)
+                } catch(Exception e) {
+                    System.err.println("ERROR: Exception during file processing: " + e.getMessage())
+                } finally {
+                    wb.write(fos)
+                    fos.close()
+
+                    wb.dispose() // remove temporary files
+                    wb.close()
+                    sheet = null
+                }
+                
+                latch.countDown()
+
+            } catch (IOException e) {
+                latch.countDown()
+                throw new RuntimeException("Failed to generate file", e)
+            }
+        }
+
+        /**
+        * Populate the Sheet using the given column definitions 
+        * @param sheet The sheet to write to
+        * @param columnDefs map of column definitions 
+        */
+        void populateSheet(sheet, columnDefs) {
+            int nextRow = 1
+            Row row = null
+
+            while(generated.get() < maxRows) {
+                row = sheet.createRow(nextRow)
+
+                columnDefs.each {
+                    def col = it.getKey()
+                    def fakerFunc = it.getValue()
+                    generatedValue = fakerFunc(faker)
+                    row.createCell(col.index).setCellValue(generatedValue)
+                }
+
+                nextRow++;
+                generated.incrementAndGet();
+            }
+        }
+    }   
 }
