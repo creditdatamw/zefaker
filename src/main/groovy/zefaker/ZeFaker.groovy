@@ -46,6 +46,11 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         def filePath = Paths.get(outputFile)
 
+        if (Files.exists(filePath)) {
+            System.err.println("Cannot overwrite existing file: " + filePath)
+            return
+        }
+
         def wb = new SXSSFWorkbook(streamingBatchSize)
         
         if (verbose) {
