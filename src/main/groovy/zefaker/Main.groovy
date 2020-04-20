@@ -8,6 +8,7 @@ import org.codehaus.groovy.control.CompilerConfiguration
 
 def cli = new CliBuilder(name: 'zefaker')
 cli.f(type: File, required: true, 'Groovy file with column definitions')
+cli.x(type: Boolean, defaultValue: 'false', 'Overwrite existing file')
 cli.output(type: String, required: true, 'File to write to, e.g. generated.xlsx')
 cli.sheet(type: String, defaultValue: 'Data', 'Sheet name in the generated Excel file')
 cli.rows(type: Integer, defaultValue: '10', 'Number of rows to generate')
@@ -29,5 +30,6 @@ binding.setProperty("verbose", options.vvv)
 binding.setProperty("sheetName", options.sheet)
 binding.setProperty("maxRows", options.rows)
 binding.setProperty("outputFile", options.output)
+binding.setProperty("overwriteExisting", options.x)
 
 groovyShell.evaluate(options.f)
