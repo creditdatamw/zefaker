@@ -16,29 +16,59 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
 /**
+ * ZeFaker main Script 
  * 
- * @property String outputFile
- * @property Faker faker
- * @property ColumnQuotes sqlQuoteMode
- * @property int maxRows
- * @property int streamingBatchSize
+ * Passes the parameters from the groovy script to the file generators.
+ * Accepts the following properties, which may be specified in the script.
+ *
+ * <ul>
+ *   <li>{@code String outputFile}</li>
+ *   <li>{@code Faker faker}</li>
+ *   <li>{@code ColumnQuotes sqlQuoteMode}</li>
+ *   <li>{@code int maxRows}</li>
+ *   <li>{@code int streamingBatchSize}</li>
+ *   <li>{@code boolean exportAsSql}</li>
+ * </ul>
  */
 abstract class ZeFaker extends groovy.lang.Script {
     Faker faker
     int streamingBatchSize = 100
-    boolean exportAsSql = false
-    ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
-
+    private ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
+ 
     protected CountDownLatch latch = new CountDownLatch(1)
 
     ColumnDef column(int index, String name) {
         return new ColumnDef(index, name, { faker -> "" })
     }
 
+    void quoteIdentifiersAs(stringVal) {
+        sqlQuoteMode = ColumnQuotes.NONE
+        
+        if (stringVal == null) return
+
+        if ("mysql".equalsIgnoreCase(stringVal) ||
+            "mariadb".equalsIgnoreCase(stringVal) ||
+            "maria".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.MYSQL
+        }
+
+        if ("postgres".equalsIgnoreCase(stringVal) ||
+            "postgresql".equalsIgnoreCase(stringVal) ||
+            "pg".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.POSTGRESQL
+        }
+
+        if ("sqlserver".equalsIgnoreCase(stringVal) ||
+            "mssql".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.MSSQL
+        }
+    }
+
     void generateFrom(columnDefs) throws IOException {
         try {
             actualGenerateFrom(columnDefs)
         } catch(Exception e) {
+            e.printStackTrace(System.err)
             latch.countDown();
         }
     }
@@ -60,14 +90,18 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         if (verbose) {
             System.out.println("Generating File: " + filePath)
-            System.out.println("Sheet: " + sheetName)
+            if (exportAsSql) {
+                System.out.println("Table: " + tableName)
+            } else {   
+                System.out.println("Sheet: " + sheetName)
+            }
             System.out.println("Rows: " + maxRows)
         }
 
-        def fileGenerator = new ExcelFileGenerator(filePath,  columnDefs, streamingBatchSize, latch)
+        def fileGenerator = new ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch)
         
         if (exportAsSql) {
-            fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, sheetName, maxRows, latch)
+            fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
             fileGenerator.setQuoteMode(sqlQuoteMode)
         }
 
@@ -95,7 +129,7 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         if (verbose) {
             System.out.print(repeat("\b", display.length()))
-            display = "Generated rows: " + maxRows + " / " + maxRows
+            display = "Generated rows: " + gen + " / " + maxRows
             System.out.print(display)
         }
     }
