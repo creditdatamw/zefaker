@@ -119,11 +119,9 @@ The following special variables are available, and are therefore *reserved names
 * **sheetName** - Change the name of the target Sheet in Excel. Overrides `-sheet`
 * **tableName** - Change the name of the target table in SQL INSERTS. Overrides `-table`
 * **outputFile** - The name/path of the file to write output to. Overrides `-f`
-* **exportAsSql** - Export the result as SQL INSERTS instead of Excel
 * **verbose** - Show verbose output. Overrides `-vvv`
 * **maxRows** - Sets the maximum number of rows to generate in the file. Overrides `-rows`
 * **overwriteExisting** - Whether to overrite an existing file with the new Workbook. Overrides `-x`
-* **sqlQuoteMode** - an enum for how to quote the values, `enum ColumnQuotes { NONE, MSSQL, MYSQL, POSTGRES }`
 
 ## Building
 
