@@ -20,13 +20,15 @@ class ExcelFileGenerator implements Runnable {
     def columnDefs
     def filePath
     def maxRows
+    def sheetName = "Sheet 1"
     final CountDownLatch latch
     final Faker faker
     final AtomicLong generated = new AtomicLong(0)
 
-    ExcelFileGenerator(faker, filePath, columnDefs, streamingBatchSize, maxRows, latch) {
+    ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch) {
         this.faker = faker
         this.filePath = filePath
+        this.sheetName = sheetName
         this.wb = new SXSSFWorkbook(streamingBatchSize)
         this.columnDefs = columnDefs
         this.latch = latch
@@ -92,7 +94,7 @@ class ExcelFileGenerator implements Runnable {
             columnDefs.each {
                 def col = it.getKey()
                 def fakerFunc = it.getValue()
-                generatedValue = fakerFunc(faker)
+                def generatedValue = fakerFunc(faker)
                 row.createCell(col.index).setCellValue(generatedValue)
             }
 
