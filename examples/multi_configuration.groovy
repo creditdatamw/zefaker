@@ -15,7 +15,7 @@ generateFrom([
     (column(index= 0, name="Account No.")): { faker -> faker.number().numberBetween(1, 200) },
     (column(index= 1, name="Company Name")): { faker -> faker.name.fullName()  + faker.options().option("Plc", "Pvt Ltd", "") },
     (column(index= 2, name="TPIN")): { faker -> "TPIN" + faker.number().numberBetween(1, 200) },
-    (column(index= 3, name="Registration Date")): { faker -> "197001-01" },
+    (column(index= 3, name="Registration Date")): { faker -> "1970-01-01" },
     (column(index= 4, name="Postal Address")): { faker -> "P.O. Box 123" },
     (column(index= 5, name="Telephone")): { faker -> "265999" + faker.number().numberBetween(111111, 999999) }
 ])

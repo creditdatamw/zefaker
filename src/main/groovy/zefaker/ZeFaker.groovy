@@ -15,28 +15,65 @@ import java.util.stream.Collectors
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
+/**
+ * ZeFaker main Script 
+ * 
+ * Passes the parameters from the groovy script to the file generators.
+ * Accepts the following properties, which may be specified in the script.
+ *
+ * <ul>
+ *   <li>{@code String outputFile}</li>
+ *   <li>{@code Faker faker}</li>
+ *   <li>{@code ColumnQuotes sqlQuoteMode}</li>
+ *   <li>{@code int maxRows}</li>
+ *   <li>{@code int streamingBatchSize}</li>
+ *   <li>{@code boolean exportAsSql}</li>
+ * </ul>
+ */
 abstract class ZeFaker extends groovy.lang.Script {
     Faker faker
     int streamingBatchSize = 100
+    private ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
+ 
     protected CountDownLatch latch = new CountDownLatch(1)
-
-    class ColumnDef {
-        int index
-        String name
-        Closure faker
-
-        public ColumnDef(int index, String name, Closure faker) {
-            this.index = index
-            this.name = name
-            this.faker = faker
-        }
-    }
 
     ColumnDef column(int index, String name) {
         return new ColumnDef(index, name, { faker -> "" })
     }
 
+    void quoteIdentifiersAs(stringVal) {
+        sqlQuoteMode = ColumnQuotes.NONE
+        
+        if (stringVal == null) return
+
+        if ("mysql".equalsIgnoreCase(stringVal) ||
+            "mariadb".equalsIgnoreCase(stringVal) ||
+            "maria".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.MYSQL
+        }
+
+        if ("postgres".equalsIgnoreCase(stringVal) ||
+            "postgresql".equalsIgnoreCase(stringVal) ||
+            "pg".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.POSTGRESQL
+        }
+
+        if ("sqlserver".equalsIgnoreCase(stringVal) ||
+            "mssql".equalsIgnoreCase(stringVal)) {
+            sqlQuoteMode = ColumnQuotes.MSSQL
+        }
+    }
+
     void generateFrom(columnDefs) throws IOException {
+        try {
+            actualGenerateFrom(columnDefs)
+        } catch(Exception e) {
+            e.printStackTrace(System.err)
+            latch.countDown();
+        }
+    }
+
+    private void actualGenerateFrom(columnDefs) throws IOException {
         if (faker == null)
             faker = new Faker()
 
@@ -51,15 +88,22 @@ abstract class ZeFaker extends groovy.lang.Script {
             return
         }
 
-        def wb = new SXSSFWorkbook(streamingBatchSize)
-        
         if (verbose) {
             System.out.println("Generating File: " + filePath)
-            System.out.println("Sheet: " + sheetName)
+            if (exportAsSql) {
+                System.out.println("Table: " + tableName)
+            } else {   
+                System.out.println("Sheet: " + sheetName)
+            }
             System.out.println("Rows: " + maxRows)
         }
 
-        def fileGenerator = new FileGenerator(filePath,  columnDefs, wb)
+        def fileGenerator = new ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch)
+        
+        if (exportAsSql) {
+            fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+            fileGenerator.setQuoteMode(sqlQuoteMode)
+        }
 
         new Thread(fileGenerator).start()
 
@@ -85,92 +129,12 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         if (verbose) {
             System.out.print(repeat("\b", display.length()))
-            display = "Generated rows: " + maxRows + " / " + maxRows
+            display = "Generated rows: " + gen + " / " + maxRows
             System.out.print(display)
         }
     }
 
-    String repeat(String v, int n) {
+    private String repeat(String v, int n) {
         return Collections.nCopies(n, v).stream().collect(Collectors.joining())
-    }
-
-    private class FileGenerator extends Runnable {
-        Workbook wb
-        def columnDefs
-        def filePath
-        final AtomicLong generated = new AtomicLong(0)
-
-        FileGenerator(filePath, columnDefs, workbook) {
-            this.filePath = filePath
-            this.wb = workbook
-            this.columnDefs = columnDefs
-        }
-
-        void run() {
-            try {
-                def fos = Files.newOutputStream(filePath)
-                def sheet = this.wb.createSheet(WorkbookUtil.createSafeSheetName(sheetName))
-                def dateCellStyle = this.wb.createCellStyle()
-                
-                dateCellStyle.setDataFormat(
-                    // TODO: Enable user to specify a date format in the script
-                    this.wb.getCreationHelper().createDataFormat().getFormat("yyyy-mm-dd")
-                );
-
-                // Create file headers
-                def row = sheet.createRow(0)
-                int i = 0
-
-                columnDefs.keySet().each {
-                    def cell = row.createCell(it.index)
-                    cell.setCellValue(it.name)
-                    // TODO: if(s.contains("DATE")) cell.setCellStyle(dateCellStyle);
-                    ++i;
-                }
-
-                try {
-                    populateSheet(sheet, columnDefs)
-                } catch(Exception e) {
-                    System.err.println("ERROR: Exception during file processing: " + e.getMessage())
-                } finally {
-                    wb.write(fos)
-                    fos.close()
-
-                    wb.dispose() // remove temporary files
-                    wb.close()
-                    sheet = null
-                }
-                
-                latch.countDown()
-
-            } catch (IOException e) {
-                latch.countDown()
-                throw new RuntimeException("Failed to generate file", e)
-            }
-        }
-
-        /**
-        * Populate the Sheet using the given column definitions 
-        * @param sheet The sheet to write to
-        * @param columnDefs map of column definitions 
-        */
-        void populateSheet(sheet, columnDefs) {
-            int nextRow = 1
-            Row row = null
-
-            while(generated.get() < maxRows) {
-                row = sheet.createRow(nextRow)
-
-                columnDefs.each {
-                    def col = it.getKey()
-                    def fakerFunc = it.getValue()
-                    generatedValue = fakerFunc(faker)
-                    row.createCell(col.index).setCellValue(generatedValue)
-                }
-
-                nextRow++;
-                generated.incrementAndGet();
-            }
-        }
-    }   
+    }  
 }

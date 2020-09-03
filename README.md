@@ -1,16 +1,16 @@
 Zé Faker
 ========
 
-`zefaker` is a command-line tool that allows you to generate Excel files 
+`zefaker` is a command-line tool that allows you to generate Excel and SQL files 
 using a simple Groovy DSL and [java-faker](https://github.com/DiUS/java-faker)
 
 ## Why would I use this?
 
-Well, if you ever need to generate an Excel file with (random*) data for whatever
-reason you can use `zefaker` to automate the process while leveraging the power of
-[Groovy](https://www.groovy-lang.org)!
+Well, if you ever need to generate an Excel file or SQL insert statemnts 
+with (random*) data for whatever reason you can use `zefaker` to automate the 
+process while leveraging the power of [Groovy](https://www.groovy-lang.org)!
 
-We created it because we deal with a lot of Excel files (with lots of columns!) 
+We created it because we deal with a lot of Excel files and SQL (with lots of columns!) 
 and often have to generate files to test the code that processes those files.
 
 _* the generated data need not necessarily be random_
@@ -42,12 +42,24 @@ generateFrom columns
 
 Once you have this, you can pass it to the `zefaker` command to generate an Excel file:
 
+**Exporting to Excel**
+
 ```sh
 $ java -jar zefaker.jar -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
 ```
 
 The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
-with data generated using the faker methods specified in the groovy script.
+with data generated using the Faker functions specified in the Groovy script.
+
+**Exporting to SQL INSERTS**
+
+```sh
+$ java -jar zefaker.jar -f=person.groovy -sql -table="people" -rows=100 -output=people-data.sql
+```
+
+The example command, above, generates a file named **people-data.sql** with a 
+**100 INSERT statements** which have random data in teh _VALUES_ clause
+generated using the Faker functions specified in the Groovy script.
 
 _Bonus / Shameless plug_: If you're using Java, you can process the generated files _quickly_ and 
 _efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
@@ -63,11 +75,13 @@ Download a copy of `zefaker` from the [Releases](https://github.com/creditdatamw
 ### Command Line
 
 ```sh
-Usage: zefaker [-x] [-vvv] -f=FILE -output=FILE [-rows=ROWS] [-sheet=SHEET]
+Usage: zefaker [options]
   -f=FILE         Groovy file with column definitions
-  -output=FILE    File to write to, e.g. generated.xlsx
   -rows=ROWS      Number of rows to generate
-  -sheet=SHEET    Sheet name in the generated Excel file
+  -output=FILE    File to write to, e.g. generated.xlsx
+  -sheet=NAME     Sheet name in the generated Excel file
+  -table=NAME     The name of the table to use in SQL INSERT mode
+  -sql            Use SQL INSERT export mode
   -vvv            Show verbose output
   -x              Overwrite existing file
 ```
@@ -103,6 +117,7 @@ specified on the command-line.
 The following special variables are available, and are therefore *reserved names*:
 
 * **sheetName** - Change the name of the target Sheet in Excel. Overrides `-sheet`
+* **tableName** - Change the name of the target table in SQL INSERTS. Overrides `-table`
 * **outputFile** - The name/path of the file to write output to. Overrides `-f`
 * **verbose** - Show verbose output. Overrides `-vvv`
 * **maxRows** - Sets the maximum number of rows to generate in the file. Overrides `-rows`
