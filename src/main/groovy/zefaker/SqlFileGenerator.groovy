@@ -14,6 +14,7 @@ class SqlFileGenerator implements Runnable {
     def filePath
     def tableName = "data"
     def maxRows = 10
+    def quoteMode = ColumnQuotes.NONE
     final CountDownLatch latch
     final Faker faker
     final AtomicLong generated = new AtomicLong(0)
@@ -29,6 +30,10 @@ class SqlFileGenerator implements Runnable {
         this.maxRows = maxRows
     }
 
+    void setQuoteMode(quoteMode) {
+        this.quoteMode = quoteMode
+    }
+
     void run() {
         StringBuilder sb = new StringBuilder()
         sb.append("INSERT INTO ")
@@ -37,7 +42,19 @@ class SqlFileGenerator implements Runnable {
             // TODO: consider order of the columns?
             .append(columnDefs.keySet()
                 .stream()
-                .map({ it ->  it.name })
+                .map({ it ->
+                    switch(quoteMode) {
+                        case ColumnQuotes.MSSQL:
+                            return String.format("[%s]", it.name)
+                        case ColumnQuotes.MYSQL:
+                            return String.format("`%s`", it.name)
+                        case ColumnQuotes.POSTGRESQL:
+                            return String.format("\"%s\"", it.name)
+                        case ColumnQuotes.NONE:
+                        default:
+                            return it.name
+                    }
+                })
                 .collect(Collectors.joining(",")))
             .append(") ")
             .append("VALUES (")
