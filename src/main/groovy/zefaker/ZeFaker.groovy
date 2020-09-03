@@ -15,9 +15,20 @@ import java.util.stream.Collectors
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
+/**
+ * 
+ * @property String outputFile
+ * @property Faker faker
+ * @property ColumnQuotes sqlQuoteMode
+ * @property int maxRows
+ * @property int streamingBatchSize
+ */
 abstract class ZeFaker extends groovy.lang.Script {
     Faker faker
     int streamingBatchSize = 100
+    boolean exportAsSql = false
+    ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
+
     protected CountDownLatch latch = new CountDownLatch(1)
 
     ColumnDef column(int index, String name) {
@@ -55,6 +66,11 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         def fileGenerator = new ExcelFileGenerator(filePath,  columnDefs, streamingBatchSize, latch)
         
+        if exportAsSql {
+            fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, sheetName, maxRows, latch)
+            fileGenerator.setQuoteMode(sqlQuoteMode)
+        }
+
         new Thread(fileGenerator).start()
 
         String display = "Generated rows: 0 / " + maxRows
