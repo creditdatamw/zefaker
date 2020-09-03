@@ -1,4 +1,7 @@
-sqlQuoteMode = ColumnQuotes.MYSQL
+// Uncomment one of the quoteIdenfiersAs lines below to add column quoting for SQL exports
+// quoteIdentifiersAs("mysql")
+// quoteIdentifiersAs("postgres")
+// quoteIdentifiersAs("mssql")
 
 firstName = column(index= 0, name= "first_name")
 lastName  = column(index= 1, name= "last_name")
