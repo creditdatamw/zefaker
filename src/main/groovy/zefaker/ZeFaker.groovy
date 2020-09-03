@@ -66,7 +66,7 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         def fileGenerator = new ExcelFileGenerator(filePath,  columnDefs, streamingBatchSize, latch)
         
-        if exportAsSql {
+        if (exportAsSql) {
             fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, sheetName, maxRows, latch)
             fileGenerator.setQuoteMode(sqlQuoteMode)
         }
