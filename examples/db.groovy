@@ -28,12 +28,16 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.text.SimpleDateFormat
 
+ymd = new SimpleDateFormat("yyyy-MM-dd")
 dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
 timestampFaker = { faker -> 
     return dateFormatter.format(faker.date().past(365, TimeUnit.DAYS))
 }
 
+def pgSingleQuotes(val) {
+    return val.replace("'", "''")
+}
 
 def addTimestampColumns(theData) {
     modifiedData = theData
@@ -56,9 +60,9 @@ idGen = new AtomicLong(0)
 
 businessData = [
  (column(index=0,name="id")): { faker -> businessIDGenerator.incrementAndGet() },
- (column(index=1,name="business_name")): { faker -> faker.name().fullName() },
- (column(index=2,name="address")): { faker -> faker.name().fullName() },
- (column(index=3,name="registration_date")): { faker -> faker.date().birthday() },
+ (column(index=1,name="business_name")): { faker -> pgSingleQuotes(faker.name().fullName()) },
+ (column(index=2,name="address")): { faker -> pgSingleQuotes(faker.name().fullName()) },
+ (column(index=3,name="registration_date")): { faker -> ymd.format(faker.date().birthday()) },
  (column(index=4,name="email")): { faker -> faker.internet().emailAddress() },
 ]
 
@@ -88,6 +92,10 @@ businessServicesData = [
 
 
 def sqlSchema = """
+DROP TABLE businesses;
+DROP TABLE users;
+DROP TABLE businesses_services;
+
 CREATE TABLE businesses (
     id int not null primary key,
     business_name varchar(255) not null,
@@ -98,6 +106,7 @@ CREATE TABLE businesses (
     modified_at timestamp,
     deleted_at timestamp
 );
+
 CREATE TABLE users (
     id int not null primary key,
     business_id int,
@@ -109,7 +118,8 @@ CREATE TABLE users (
     deleted_at timestamp
 
 );
-CREATE TABLE businesses (
+
+CREATE TABLE businesses_services (
     id int not null primary key,
     business_id int,
     service_name varchar(255),
