@@ -42,7 +42,7 @@ generateFrom columns
 
 Once you have this, you can pass it to the `zefaker` command to generate an Excel file:
 
-**Exporting to Excel**
+### Exporting as an Excel file
 
 ```sh
 $ java -jar zefaker.jar -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
@@ -51,7 +51,7 @@ $ java -jar zefaker.jar -f=person.groovy -sheet="Persons" -rows=100 -output=peop
 The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
 with data generated using the Faker functions specified in the Groovy script.
 
-**Exporting to SQL INSERTS**
+### Exporting as an SQL file
 
 ```sh
 $ java -jar zefaker.jar -f=person.groovy -sql -table="people" -rows=100 -output=people-data.sql
