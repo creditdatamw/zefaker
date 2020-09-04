@@ -35,9 +35,6 @@ timestampFaker = { faker ->
     return dateFormatter.format(faker.date().past(365, TimeUnit.DAYS))
 }
 
-def pgSingleQuotes(val) {
-    return val.replace("'", "''")
-}
 
 def addTimestampColumns(theData) {
     modifiedData = theData
@@ -60,8 +57,8 @@ idGen = new AtomicLong(0)
 
 businessData = [
  (column(index=0,name="id")): { faker -> businessIDGenerator.incrementAndGet() },
- (column(index=1,name="business_name")): { faker -> pgSingleQuotes(faker.name().fullName()) },
- (column(index=2,name="address")): { faker -> pgSingleQuotes(faker.name().fullName()) },
+ (column(index=1,name="business_name")): { faker -> faker.name().fullName() },
+ (column(index=2,name="address")): { faker -> faker.name().fullName() },
  (column(index=3,name="registration_date")): { faker -> ymd.format(faker.date().birthday()) },
  (column(index=4,name="email")): { faker -> faker.internet().emailAddress() },
 ]

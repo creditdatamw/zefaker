@@ -1,0 +1,10 @@
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (1,78,'Electronics','2020-02-10 10:24:52','2020-03-29 05:48:24',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (2,322,'Retail','2019-09-18 17:17:29','2020-08-06 20:52:07',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (3,236,'Electronics','2019-10-08 13:36:36','2020-03-11 06:16:53',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (4,78,'Electronics','2020-07-24 06:59:16','2020-02-22 01:38:56',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (5,4,'Retail','2020-05-31 23:38:07','2020-04-25 17:15:28',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (6,341,'Retail','2019-11-26 14:35:05','2020-05-17 20:31:52',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (7,321,'Transportation','2020-05-23 23:36:32','2020-01-20 00:15:14',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (8,140,'Retail','2020-05-09 04:26:46','2020-05-27 00:59:03',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (9,144,'Retail','2019-10-18 18:42:32','2020-03-14 00:32:11',null);
+INSERT INTO businesses_services (id,business_id,service_name,created_at,modified_at,deleted_at) VALUES (10,142,'Retail','2020-09-02 02:15:02','2020-05-05 19:54:39',null);
