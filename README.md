@@ -45,7 +45,7 @@ Once you have this, you can pass it to the `zefaker` command to generate an Exce
 ### Exporting as an Excel file
 
 ```sh
-$ java -jar zefaker.jar -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
+$ zefaker -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
 ```
 
 The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
@@ -54,7 +54,7 @@ with data generated using the Faker functions specified in the Groovy script.
 ### Exporting as an SQL file
 
 ```sh
-$ java -jar zefaker.jar -f=person.groovy -sql -table="people" -rows=100 -output=people-data.sql
+$ zefaker -f=person.groovy -sql -table="people" -rows=100 -output=people-data.sql
 ```
 
 The example command, above, generates a file named **people-data.sql** with a 
@@ -71,6 +71,8 @@ Download a copy of `zefaker` from the [Releases](https://github.com/creditdatamw
 > NOTE: Requires at least Java 8 to be installed
 
 ## Usage
+
+The build archive contains start scripts, `zefaker` and `zefaker.bat` for UN*X and Windows environments, respectively.
 
 ### Command Line
 
@@ -130,7 +132,7 @@ We are using `Gradle` for this, so follow the instructions below to build it.
 ```sh
 $ git clone https://github.com/creditdatamw/zefaker.git
 $ cd zefaker
-$ gradlew clean jar shadowJar
+$ gradlew clean build
 ```
 
 After this, the build file will be in `build/libs/zefaker-all.jar` - it is an executable Jar file.

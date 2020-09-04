@@ -18,6 +18,12 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-cli-picocli:2.5.7'
 }
 
+task createStartScripts(type: CreateStartScripts) {
+    outputDir = file('build/zefaker')
+    mainClassName = 'zefaker.Main'
+    applicationName = 'zefaker'
+}
+
 application {
     mainClassName = 'zefaker.Main'
 }
