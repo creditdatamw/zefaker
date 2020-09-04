@@ -73,7 +73,7 @@ class SqlFileGenerator implements Runnable {
                     def col = it.getKey()
                     def fakerFunc = it.getValue()
                     def generatedValue = fakerFunc(faker)
-                    rowValues[col.index] = String.valueOf(generatedValue)
+                    rowValues[col.index] = generatedValue
                 }
 
                 def sqlStatement = createInsertStatement(sqlInsertTemplate, rowValues)
@@ -102,11 +102,11 @@ class SqlFileGenerator implements Runnable {
         // use rowValuesQuotesReplaced
         def valuesString = Arrays.stream(rowValues)
             .map({ it -> 
-                if (it == null) return it
+                if (it == null) return null
                 if (it instanceof String) {
-                    return String.format("'%s'", it.replace("'", "\\'"))
+                    return String.format("'%s'", it.replace("'", "''"))
                 }
-                return String.format("'%s'", it)
+                return String.format("%s", it)
             })
             .collect(Collectors.joining(","))
 
