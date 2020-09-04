@@ -34,25 +34,6 @@ timestampFaker = { faker ->
     return dateFormatter.format(faker.date().past(365, TimeUnit.DAYS))
 }
 
-class MaxFakedInteger {
-    def maxFakedValue = 0
-    def fakerFunc
-    MaxFakedInteger(fn) {
-        this.fakerFunc = fn
-    }
-
-    def getMaxID() {
-        return this.maxFakedValue
-    }
-
-    def newValue(faker) {
-        def genVal = fakerFunc(faker)
-        if (genVal > this.maxFakedValue) {
-            this.maxFakedValue = genVal
-        }
-        return genVal
-    }
-}
 
 def addTimestampColumns(theData) {
     modifiedData = theData
@@ -73,10 +54,8 @@ def addTimestampColumns(theData) {
 businessIDGenerator = new AtomicLong(0)
 idGen = new AtomicLong(0)
 
-businessIDFaker = new MaxFakedInteger({ faker -> businessIDGenerator.incrementAndGet() })
-
 businessData = [
- (column(index=0,name="id")): { faker -> businessIDFaker.newValue(faker) },
+ (column(index=0,name="id")): { faker -> businessIDGenerator.incrementAndGet() },
  (column(index=1,name="business_name")): { faker -> faker.name().fullName() },
  (column(index=2,name="address")): { faker -> faker.name().fullName() },
  (column(index=3,name="registration_date")): { faker -> faker.date().birthday() },
@@ -86,10 +65,10 @@ businessData = [
 usersData = [
     (column(index=0,name="id")): { faker -> idGen.incrementAndGet() },
     (column(index=1,name="business_id")): { faker -> 
-        faker.number().numberBetween(1, businessIDFaker.getMaxID())
+        faker.number().numberBetween(1, businessIDGenerator.get())
     },
     (column(index=2,name="username")): { faker -> 
-        faker.name().fullName().replace("\\s","").toLowerCase()
+        faker.name().fullName().replace("\\s*","").toLowerCase()
     },
     (column(index=3,name="subscription_type")): { faker -> 
         faker.options().option('premium', 'team', 'free')
@@ -100,7 +79,7 @@ usersData = [
 businessServicesData = [
     (column(index=0,name="id")): { faker -> idGen.incrementAndGet() },
     (column(index=1,name="business_id")): { faker -> 
-        faker.number().numberBetween(1, businessIDFaker.getMaxID())
+        faker.number().numberBetween(1, businessIDGenerator.get())
     },
     (column(index=2,name="service_name")): { faker -> 
         faker.options().option('Electronics', 'Retail', 'Transportation')
