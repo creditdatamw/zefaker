@@ -51,6 +51,10 @@ $ zefaker -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
 The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
 with data generated using the Faker functions specified in the Groovy script.
 
+> _Bonus / Shameless plug_: If you're using Java, you can process the generated files _quickly_ and 
+_efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
+
+
 ### Exporting as an SQL file
 
 ```sh
@@ -61,8 +65,6 @@ The example command, above, generates a file named **people-data.sql** with a
 **100 INSERT statements** which have random data in teh _VALUES_ clause
 generated using the Faker functions specified in the Groovy script.
 
-_Bonus / Shameless plug_: If you're using Java, you can process the generated files _quickly_ and 
-_efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
 
 ## Installation
 
