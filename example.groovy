@@ -3,6 +3,12 @@
 // quoteIdentifiersAs("postgres")
 // quoteIdentifiersAs("mssql")
 
+
+// Uncomment the line below to instruct zefaker to output data using COPY
+// NB: Only postgresql COPY is supported at the moment. 
+//
+// useSQLCOPY() 
+
 firstName = column(index= 0, name= "first_name")
 lastName  = column(index= 1, name= "last_name")
 age       = column(index= 2, name= "age")

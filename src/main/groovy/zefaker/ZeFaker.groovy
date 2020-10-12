@@ -34,11 +34,21 @@ abstract class ZeFaker extends groovy.lang.Script {
     Faker faker
     int streamingBatchSize = 100
     private ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
+    private boolean sqlCopyMode = false 
  
     protected CountDownLatch latch = new CountDownLatch(1)
 
     ColumnDef column(int index, String name) {
         return new ColumnDef(index, name, { faker -> "" })
+    }
+
+    // User should call this to indicate they want SQL COPY format created
+    // instead of regular INSERTS
+    //
+    // Support for Postgresql COPY format only, currently
+    void useSQLCOPY() {
+        sqlCopyMode = true && sqlQuoteMode == ColumnQuotes.POSTGRESQL
+        if (!sqlCopyMode) System.err.println("Only Postgresql is supported for useSQLCOPY, please use `quoteIdentifiersAs(\"postgres\")` in your Zefaker script")
     }
 
     void quoteIdentifiersAs(stringVal) {
@@ -69,6 +79,7 @@ abstract class ZeFaker extends groovy.lang.Script {
             actualGenerateFrom(columnDefs)
         } catch(Exception e) {
             e.printStackTrace(System.err)
+        } finally {
             latch.countDown();
         }
     }
@@ -101,7 +112,12 @@ abstract class ZeFaker extends groovy.lang.Script {
         def fileGenerator = new ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch)
         
         if (exportAsSql) {
-            fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+            if (sqlCopyMode) {
+                fileGenerator = new SqlCopyFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+            } else {
+                fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+            }
+
             fileGenerator.setQuoteMode(sqlQuoteMode)
         }
 
