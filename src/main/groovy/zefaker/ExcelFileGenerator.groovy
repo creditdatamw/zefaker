@@ -69,10 +69,8 @@ class ExcelFileGenerator implements Runnable {
                 wb.dispose() // remove temporary files
                 wb.close()
                 sheet = null
+                latch.countDown()
             }
-            
-            latch.countDown()
-
         } catch (IOException e) {
             latch.countDown()
             throw new RuntimeException("Failed to generate file", e)
