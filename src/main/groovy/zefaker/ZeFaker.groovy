@@ -110,7 +110,11 @@ abstract class ZeFaker extends groovy.lang.Script {
         }
 
         def fileGenerator = new ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch)
-        
+
+        if (exportAsJson) {
+            fileGenerator = new JsonFileGenerator(faker, filePath,  columnDefs, maxRows, latch)
+        }
+
         if (exportAsSql) {
             if (sqlCopyMode) {
                 fileGenerator = new SqlCopyFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
