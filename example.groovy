@@ -9,6 +9,10 @@
 //
 // useSQLCOPY() 
 
+// Specify options that affect CSV output via csvOptions reference
+// you can specify the following: separator, quoteChar, lineSeparator, escapeChar
+csvOptions.separator = '|'
+
 firstName = column(index= 0, name= "first_name")
 lastName  = column(index= 1, name= "last_name")
 age       = column(index= 2, name= "age")

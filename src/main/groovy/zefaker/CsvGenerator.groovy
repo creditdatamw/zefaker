@@ -6,17 +6,11 @@ import com.opencsv.CSVWriter
 import java.util.concurrent.atomic.AtomicLong
 import java.util.stream.Collectors
 
-import static com.opencsv.ICSVWriter.*
-
 class CsvGenerator implements Generator {
-    private final char separator
+    final CsvOptions opts
 
-    CsvGenerator() {
-        this(DEFAULT_SEPARATOR)
-    }
-
-    CsvGenerator(char separator) {
-        this.separator = separator
+    CsvGenerator(CsvOptions opts) {
+        this.opts = opts
     }
 
     @Override
@@ -33,8 +27,7 @@ class CsvGenerator implements Generator {
     void generate(Faker faker, Map<ColumnDef, Closure> columnDefs, int maxRows, Flushable flushable) {
         def buf = flushable as Writer
 
-        CSVWriter writer = new CSVWriter(buf,
-            separator, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END)
+        CSVWriter writer = new CSVWriter(buf, opts.separator, opts.quoteChar, opts.escapeChar, opts.lineSeparator)
 
         AtomicLong generated = new AtomicLong(0)
         try {

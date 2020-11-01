@@ -26,7 +26,8 @@ abstract class ZeFaker extends groovy.lang.Script {
     int streamingBatchSize = 100
     private ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
     private boolean sqlCopyMode = false 
- 
+    CsvOptions csvOptions = new CsvOptions()
+
     protected CountDownLatch latch = new CountDownLatch(1)
 
     static ColumnDef column(int index, String name) {
@@ -95,7 +96,7 @@ abstract class ZeFaker extends groovy.lang.Script {
         if (exportAsJson) {
             fileGenerator = new JsonFileGenerator()
         } else if (exportAsCsv) {
-            fileGenerator = new CsvGenerator()
+            fileGenerator = new CsvGenerator(csvOptions)
         } else if (exportAsSql) {
             if (sqlCopyMode) {
                 fileGenerator = new SqlCopyFileGenerator(tableName)
