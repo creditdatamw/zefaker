@@ -66,13 +66,23 @@ abstract class ZeFaker extends groovy.lang.Script {
         }
     }
 
-    void generateFrom(columnDefs) {
-        if (faker == null)
-            faker = new Faker()
+    private _setAndSort(Map<ColumnDef, Closure> columnDefs) {
+        columnDefs.forEach { col, func ->
+            col.faker = func
+        }
+        columnDefs.sort { a, b -> (a.key <=> b.key) }
+    }
 
+    void generateFrom(columnDefs) {
+        assert columnDefs != null
         assert sheetName != null
         assert outputFile != null
         assert maxRows >= 1 && maxRows <= Integer.MAX_VALUE
+
+        if (faker == null)
+            faker = new Faker()
+
+        this._setAndSort(columnDefs)
 
         def filePath = Paths.get(outputFile)
 
