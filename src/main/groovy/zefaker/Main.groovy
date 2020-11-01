@@ -13,6 +13,7 @@ cli.rows(type: Integer, defaultValue: '10', 'Number of rows to generate')
 cli.table(type: String, defaultValue: 'Data', 'Table name in the generated SQL file')
 cli.sql(type: Boolean, defaultValue: 'false', 'Export as SQL INSERTS instead of Excel')
 cli.json(type: Boolean, defaultValue: 'false', 'Export generated data as JSON file')
+cli.csv(type: Boolean, defaultValue: 'false', 'Export generated data as a CSV file')
 cli.vvv(type: Boolean, defaultValue: 'false', 'Show verbose output')
 
 def options = cli.parse(args)
@@ -36,7 +37,8 @@ binding.setProperty("sheetName", options.sheet)
 // Options for the SQL output
 binding.setProperty("tableName", options.table)
 binding.setProperty("exportAsSql", options.sql)
-binding.setProperty("exportAsExcel", !options.sql && !options.json)
 binding.setProperty("exportAsJson", options.json)
+binding.setProperty("exportAsCsv", options.csv)
+binding.setProperty("exportAsExcel", !options.sql && !options.json && !options.csv)
 
 groovyShell.evaluate(options.f)

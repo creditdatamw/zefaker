@@ -1,19 +1,10 @@
 package zefaker
 
 import com.github.javafaker.Faker
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
-import org.apache.poi.ss.util.WorkbookUtil
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.nio.file.Paths
 import java.nio.file.Files
-import java.util.stream.Collectors
+import java.nio.file.Paths
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.atomic.AtomicLong
 
 /**
  * ZeFaker main Script 
@@ -38,7 +29,7 @@ abstract class ZeFaker extends groovy.lang.Script {
  
     protected CountDownLatch latch = new CountDownLatch(1)
 
-    ColumnDef column(int index, String name) {
+    static ColumnDef column(int index, String name) {
         return new ColumnDef(index, name, { faker -> "" })
     }
 
@@ -99,23 +90,27 @@ abstract class ZeFaker extends groovy.lang.Script {
             System.out.println("Rows: " + maxRows)
         }
 
-        def fileGenerator = new ExcelFileGenerator(sheetName, streamingBatchSize)
+        def fileGenerator
 
         if (exportAsJson) {
             fileGenerator = new JsonFileGenerator()
-        }
-
-        if (exportAsSql) {
+        } else if (exportAsCsv) {
+            fileGenerator = new CsvGenerator()
+        } else if (exportAsSql) {
             if (sqlCopyMode) {
                 fileGenerator = new SqlCopyFileGenerator(tableName)
             } else {
                 fileGenerator = new SqlFileGenerator(tableName, sqlQuoteMode)
             }
+        } else {
+            fileGenerator = new ExcelFileGenerator(sheetName, streamingBatchSize)
         }
 
-        def fw = Files.newBufferedWriter(filePath)
+        final Flushable fw
         if (exportAsExcel) {
             fw = Files.newOutputStream(filePath)
+        } else {
+            fw = Files.newBufferedWriter(filePath)
         }
         
         try {
