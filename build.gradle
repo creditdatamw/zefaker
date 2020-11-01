@@ -10,14 +10,13 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.javafaker:javafaker:1.0.2'
-    compile 'org.apache.poi:poi:4.1.2'
-    compile 'org.apache.poi:poi-ooxml:4.1.2'
+    implementation "com.github.javafaker:javafaker:$javaFakerVersion"
+    implementation "org.apache.poi:poi:$poiVersion"
+    implementation "org.apache.poi:poi-ooxml:$poiVersion"
     implementation "com.opencsv:opencsv:$opencsvVersion"
-
-    implementation 'org.codehaus.groovy:groovy:2.5.7'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'org.codehaus.groovy:groovy-cli-picocli:2.5.7'
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "org.codehaus.groovy:groovy:$groovyVersion"
+    implementation "org.codehaus.groovy:groovy-cli-picocli:$groovyVersion"
 }
 
 task createStartScripts(type: CreateStartScripts) {
