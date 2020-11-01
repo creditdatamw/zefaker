@@ -1,9 +1,7 @@
 package zefaker
 
 import com.github.javafaker.Faker
-import groovy.lang.Binding
 import groovy.cli.picocli.CliBuilder
-import java.nio.file.Paths
 import org.codehaus.groovy.control.CompilerConfiguration
 
 def cli = new CliBuilder(name: 'zefaker')
@@ -23,7 +21,7 @@ if (options == null) {
     return
 }
 
-def sharedData = new Binding()
+def binding = new Binding()
 def config = new CompilerConfiguration()
 config.scriptBaseClass = "zefaker.ZeFaker"
 def groovyShell = new GroovyShell(this.class.classLoader, binding, config)
@@ -38,6 +36,7 @@ binding.setProperty("sheetName", options.sheet)
 // Options for the SQL output
 binding.setProperty("tableName", options.table)
 binding.setProperty("exportAsSql", options.sql)
+binding.setProperty("exportAsExcel", !options.sql && !options.json)
 binding.setProperty("exportAsJson", options.json)
 
 groovyShell.evaluate(options.f)
