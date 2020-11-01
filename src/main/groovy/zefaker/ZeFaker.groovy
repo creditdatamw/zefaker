@@ -74,17 +74,7 @@ abstract class ZeFaker extends groovy.lang.Script {
         }
     }
 
-    void generateFrom(columnDefs) throws IOException {
-        try {
-            actualGenerateFrom(columnDefs)
-        } catch(Exception e) {
-            e.printStackTrace(System.err)
-        } finally {
-            latch.countDown();
-        }
-    }
-
-    private void actualGenerateFrom(columnDefs) throws IOException {
+    void generateFrom(columnDefs) {
         if (faker == null)
             faker = new Faker()
 
@@ -109,52 +99,31 @@ abstract class ZeFaker extends groovy.lang.Script {
             System.out.println("Rows: " + maxRows)
         }
 
-        def fileGenerator = new ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch)
+        def fileGenerator = new ExcelFileGenerator(sheetName, streamingBatchSize)
 
         if (exportAsJson) {
-            fileGenerator = new JsonFileGenerator(faker, filePath,  columnDefs, maxRows, latch)
+            fileGenerator = new JsonFileGenerator()
         }
 
         if (exportAsSql) {
             if (sqlCopyMode) {
-                fileGenerator = new SqlCopyFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+                fileGenerator = new SqlCopyFileGenerator(tableName)
             } else {
-                fileGenerator = new SqlFileGenerator(faker, filePath,  columnDefs, tableName, maxRows, latch)
+                fileGenerator = new SqlFileGenerator(tableName, sqlQuoteMode)
             }
-
-            fileGenerator.setQuoteMode(sqlQuoteMode)
         }
 
-        new Thread(fileGenerator).start()
-
-        String display = "Generated rows: 0 / " + maxRows
+        def fw = Files.newBufferedWriter(filePath)
+        if (exportAsExcel) {
+            fw = Files.newOutputStream(filePath)
+        }
         
-        if (verbose) {
-            System.out.print(display)
-        }
-
-        int gen = 0
-        while(true) {
-            gen = fileGenerator.generated.get()
-            
-            if (gen >= maxRows) break
-            if (verbose) {
-                System.out.print(repeat("\b", display.length()))
-                display = "Generated rows: " + gen + " / " + maxRows
-                System.out.print(display)
-            }
-        }
-
-        latch.await()
-
-        if (verbose) {
-            System.out.print(repeat("\b", display.length()))
-            display = "Generated rows: " + gen + " / " + maxRows
-            System.out.print(display)
-        }
+        try {
+            fileGenerator.generate(faker, columnDefs, maxRows, fw)
+        } catch(Exception e) {
+            throw new RuntimeException("An error occurred: " + e.getMessage(), e)
+        } finally {
+            fw.close()
+        }   
     }
-
-    private String repeat(String v, int n) {
-        return Collections.nCopies(n, v).stream().collect(Collectors.joining())
-    }  
 }

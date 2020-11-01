@@ -1,61 +1,59 @@
 package zefaker
 
 import com.github.javafaker.Faker
-import com.google.gson.*;
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 
-import java.nio.file.Paths
-import java.nio.file.Files
-import java.io.BufferedWriter
-import java.util.stream.Collectors
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
-class JsonFileGenerator implements Runnable {
-    def columnDefs
-    def filePath
-    def maxRows = 10
-    final CountDownLatch latch
-    final Faker faker
-    final AtomicLong generated = new AtomicLong(0)
+class JsonFileGenerator implements Generator {
     final Gson gson = new Gson()
+    final AtomicLong generated = new AtomicLong(0)
 
-    JsonFileGenerator(faker, filePath, columnDefs, maxRows, latch) {
-        this.faker = faker
-        this.filePath = filePath
-        this.columnDefs = columnDefs
-        this.latch = latch
-        this.maxRows = maxRows
+    String name() {
+        return "JSON"
     }
 
-    void run() {
+    String fileExtension() {
+        return ".json"
+    }
+
+    void generate(Faker faker, Map<ColumnDef, Closure> columnDefs, int maxRows, Flushable output) {
         def jsonArr = new JsonArray()
          try {
             while(generated.get() < maxRows) {
-                def jsonNode = new JsonObject()
+                def objNode = new JsonObject()
                 
                 columnDefs.each {
                     def col = it.getKey()
                     def fakerFunc = it.getValue()
                     def generatedValue = fakerFunc(faker)
                     if (generatedValue instanceof JsonElement) {
-                        jsonNode.add(col.name, generatedValue)
+                        objNode.add(col.name, generatedValue)
                     } else {
                         // TODO: Check for supported data types for the addProperty call
-                        jsonNode.addProperty(col.name, generatedValue)
+                        if (generatedValue instanceof String || 
+                                generatedValue instanceof Boolean ||
+                                generatedValue instanceof Integer ||
+                                generatedValue instanceof Long) {
+
+                            objNode.addProperty(col.name, generatedValue)
+                        } else {
+                            objNode.addProperty(col.name, generatedValue.toString())
+                        }
                     }
                 }
 
-                jsonArr.add(jsonNode)
+                jsonArr.add(objNode)
 
                 generated.incrementAndGet();
             }
-            def fw = Files.newBufferedWriter(filePath)
-            gson.toJson(jsonArr, fw)
-            fw.close()
+            
+            gson.toJson(jsonArr, output as Appendable)
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate file", e)
-        } finally {
-            latch.countDown()
         }
     }
 }

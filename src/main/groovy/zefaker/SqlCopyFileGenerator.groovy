@@ -1,38 +1,33 @@
 package zefaker
 
-import com.github.javafaker.Faker
-
-import java.nio.file.Paths
-import java.nio.file.Files
-import java.io.BufferedWriter
-import java.util.stream.Collectors
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
-class SqlCopyFileGenerator implements Runnable {
-    def columnDefs
-    def filePath
+import com.github.javafaker.Faker
+
+import java.util.stream.Collectors
+
+
+class SqlCopyFileGenerator implements Generator {
     def tableName = "data"
-    def maxRows = 10
     def quoteMode = ColumnQuotes.NONE
-    final CountDownLatch latch
-    final Faker faker
     final AtomicLong generated = new AtomicLong(0)
 
-    SqlCopyFileGenerator(faker, filePath, columnDefs, tableName, maxRows, latch) {
-        this.faker = faker
-        this.filePath = filePath
-        this.columnDefs = columnDefs
+    SqlCopyFileGenerator(tableName, quoteMode) {
         this.tableName = tableName
-        this.latch = latch
-        this.maxRows = maxRows
+        this.quoteMode = ColumnQuotes.POSTGRESQL
     }
 
-    void setQuoteMode(quoteMode) {
-        this.quoteMode = quoteMode
+    String name() {
+        return "SQL COPY"
     }
 
-    void run() {
+    String fileExtension() {
+        return ".sql"
+    }
+
+    void generate(Faker faker, Map<ColumnDef, Closure> columnDefs, int maxRows, Flushable output) {
+        assert output instanceof  BufferedWriter
+        def buf = output as BufferedWriter
         StringBuilder sb = new StringBuilder()
         sb.append("SET DATESTYLE TO ISO;\n")
         sb.append("COPY ")
@@ -58,11 +53,9 @@ class SqlCopyFileGenerator implements Runnable {
             .append(")")
             .append(" FROM stdin;");
 
-        def bufferedWriter = Files.newBufferedWriter(filePath)
-
         try {
-            bufferedWriter.write(sb.toString())
-            bufferedWriter.newLine()
+            buf.write(sb.toString())
+            buf.newLine()
 
             def rowValues = new Object[columnDefs.size()]
 
@@ -75,21 +68,17 @@ class SqlCopyFileGenerator implements Runnable {
                 }
 
                 def copyLineString = createCopyLine(rowValues)
-                bufferedWriter.write(copyLineString)
-                bufferedWriter.newLine()
+                buf.write(copyLineString)
+                buf.newLine()
 
                 generated.incrementAndGet();
             }
-            bufferedWriter.write("\\.")
-            bufferedWriter.newLine()
-            bufferedWriter.flush();
+            buf.write("\\.")
+            buf.newLine()
+            buf.flush();
 
         } catch (Exception e) {
-            bufferedWriter.close()
-
             throw new RuntimeException("Failed to generate file", e)
-        } finally {
-            latch.countDown()
         }
     }
 

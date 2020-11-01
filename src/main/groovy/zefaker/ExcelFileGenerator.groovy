@@ -1,44 +1,32 @@
 package zefaker
 
 import com.github.javafaker.Faker
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.WorkbookUtil
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
-import java.nio.file.Paths
-import java.nio.file.Files
-import java.util.stream.Collectors
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
-class ExcelFileGenerator implements Runnable {
-    Workbook wb
-    def columnDefs
-    def filePath
-    def maxRows
+class ExcelFileGenerator implements Generator {
+    SXSSFWorkbook wb
     def sheetName = "Sheet 1"
-    final CountDownLatch latch
-    final Faker faker
     final AtomicLong generated = new AtomicLong(0)
 
-    ExcelFileGenerator(faker, filePath, columnDefs, sheetName, streamingBatchSize, maxRows, latch) {
-        this.faker = faker
-        this.filePath = filePath
+    ExcelFileGenerator(sheetName, streamingBatchSize) {
         this.sheetName = sheetName
         this.wb = new SXSSFWorkbook(streamingBatchSize)
-        this.columnDefs = columnDefs
-        this.latch = latch
-        this.maxRows = maxRows
     }
 
-    void run() {
+    String name() {
+        return "Excel"
+    }
 
+    String fileExtension() {
+        return ".xlsx"
+    }
+
+    void generate(Faker faker, Map<ColumnDef, Closure> columnDefs, int maxRows, Flushable output) {
         try {
-            def fos = Files.newOutputStream(filePath)
             def sheet = this.wb.createSheet(WorkbookUtil.createSafeSheetName(sheetName))
             def dateCellStyle = this.wb.createCellStyle()
             
@@ -58,22 +46,15 @@ class ExcelFileGenerator implements Runnable {
                 ++i;
             }
 
-            try {
-                populateSheet(sheet, columnDefs)
-            } catch(Exception e) {
-                System.err.println("ERROR: Exception during file processing: " + e.getMessage())
-            } finally {
-                wb.write(fos)
-                fos.close()
+            populateSheet(faker, sheet, columnDefs, maxRows)
+            
+            wb.write(output as OutputStream)
 
-                wb.dispose() // remove temporary files
-                wb.close()
-                sheet = null
-                latch.countDown()
-            }
         } catch (IOException e) {
-            latch.countDown()
             throw new RuntimeException("Failed to generate file", e)
+        } finally {
+            wb.dispose() // remove temporary files
+            wb.close()
         }
     }
 
@@ -82,7 +63,7 @@ class ExcelFileGenerator implements Runnable {
     * @param sheet The sheet to write to
     * @param columnDefs map of column definitions 
     */
-    void populateSheet(sheet, columnDefs) {
+    void populateSheet(faker, sheet, columnDefs, maxRows) {
         int nextRow = 1
         Row row = null
 

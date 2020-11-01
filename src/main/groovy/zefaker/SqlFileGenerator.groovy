@@ -1,40 +1,36 @@
 package zefaker
 
-import com.github.javafaker.Faker
-
-import java.nio.file.Paths
-import java.nio.file.Files
-import java.io.BufferedWriter
-import java.util.stream.Collectors
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicLong
 
-class SqlFileGenerator implements Runnable {
-    def columnDefs
-    def filePath
+import com.github.javafaker.Faker
+
+import java.util.stream.Collectors
+
+
+class SqlFileGenerator implements Generator {
     def tableName = "data"
-    def maxRows = 10
     def quoteMode = ColumnQuotes.NONE
-    final CountDownLatch latch
-    final Faker faker
     final AtomicLong generated = new AtomicLong(0)
 
     final VALUES_PLACEHOLDER = "__values__"
 
-    SqlFileGenerator(faker, filePath, columnDefs, tableName, maxRows, latch) {
-        this.faker = faker
-        this.filePath = filePath
-        this.columnDefs = columnDefs
+    SqlFileGenerator(tableName, quoteMode) {
         this.tableName = tableName
-        this.latch = latch
-        this.maxRows = maxRows
-    }
-
-    void setQuoteMode(quoteMode) {
         this.quoteMode = quoteMode
     }
 
-    void run() {
+    String name() {
+        return "SQL"
+    }
+
+    String fileExtension() {
+        return ".sql"
+    }
+
+    void generate(Faker faker, Map<ColumnDef, Closure> columnDefs, int maxRows, Flushable output) {
+        assert output instanceof  BufferedWriter
+        def buf = output as BufferedWriter
+
         StringBuilder sb = new StringBuilder()
         sb.append("INSERT INTO ")
             .append(tableName)
@@ -51,6 +47,7 @@ class SqlFileGenerator implements Runnable {
                         case ColumnQuotes.POSTGRESQL:
                             return String.format("\"%s\"", it.name)
                         case ColumnQuotes.NONE:
+                            return it.name
                         default:
                             return it.name
                     }
@@ -59,11 +56,9 @@ class SqlFileGenerator implements Runnable {
             .append(") ")
             .append("VALUES (")
             .append(VALUES_PLACEHOLDER)
-            .append(");");
+            .append(");")
 
         def sqlInsertTemplate = sb.toString()
-
-        def bufferedWriter = Files.newBufferedWriter(filePath)
 
         try {
             def rowValues = new Object[columnDefs.size()]
@@ -77,20 +72,16 @@ class SqlFileGenerator implements Runnable {
                 }
 
                 def sqlStatement = createInsertStatement(sqlInsertTemplate, rowValues)
-                bufferedWriter.write(sqlStatement)
-                bufferedWriter.newLine()
+                buf.write(sqlStatement)
+                buf.newLine()
 
-                generated.incrementAndGet();
+                generated.incrementAndGet()
             }
-            
-            bufferedWriter.flush();
+
+            buf.flush()
 
         } catch (Exception e) {
-            bufferedWriter.close()
-
             throw new RuntimeException("Failed to generate file", e)
-        } finally {
-            latch.countDown()
         }
     }
 
