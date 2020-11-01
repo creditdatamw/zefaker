@@ -1,21 +1,31 @@
 Zé Faker
 ========
 
-`zefaker` is a command-line tool that allows you to generate Excel and SQL files 
-using a simple Groovy DSL and [java-faker](https://github.com/DiUS/java-faker)
+`zefaker` is a command-line tool that helps you to generate and export data into CSV, Excel and SQL files.
+
+## Features
+
+* Random data generation via [java-faker](https://github.com/DiUS/java-faker)
+* Export to CSV
+* Export to SQL INSERTS
+* Export to Excel files
+* Export to JSON
 
 ## Why would I use this?
 
-Well, if you ever need to generate an Excel file or SQL insert statemnts 
-with (random*) data for whatever reason you can use `zefaker` to automate the 
-process while leveraging the power of [Groovy](https://www.groovy-lang.org)!
+Short answer **to generate (test) data**.
 
-We created it because we deal with a lot of Excel files and SQL (with lots of columns!) 
-and often have to generate files to test the code that processes those files.
+If you ever need to have a CSV, Excel file with (random*) data or need to 
+populate a database with development/dummy data you can use `zefaker` to 
+generate the data, leveraging the power of [Groovy](https://www.groovy-lang.org)
 
-_* the generated data need not necessarily be random_
+We created it because we deal with a lot of Excel files (with lots of columns!) and SQL data and often have to generate files to test the code that processes those files or data.
+
+_* the generated data does not have to be random_
 
 ## Example Usage
+
+> NOTE: Checkout the [examples](./examples/) for even more examples, and "advanced" usage
 
 Let's go straight to an example:
 
@@ -24,46 +34,64 @@ Create a file named `person.groovy` and place the following content:
 ```groovy
 // person.groovy
 
-firstName = column(index= 0, name="Firstname")
-lastName  = column(index= 1, name="Last Name")
+firstName = column(index= 0, name="FirstName")
+lastName  = column(index= 1, name="LastName")
 age       = column(index= 2, name="Age")
 
 accountStatus = column(index=3, name="Account Status")
+
+plan  = column(index=5, name="Plan")
 
 columns = [
     (firstName): { faker -> faker.name().firstName() },
     (lastName): { faker -> faker.name().lastName() },
     (age): { faker -> faker.number().numberBetween(18, 70) },
-    (accountStatus): { faker -> faker.options().option("Open", "Closed") }
+    (accountStatus): { faker -> faker.options().option("Open", "Closed") },
+    (plan): { faker -> "FREE" } // doesn't necessarily have to be a faker value
 ]
+
 // NOTE: This last line is necessary for zefaker to work.
 generateFrom columns
 ```
 
-Once you have this, you can pass it to the `zefaker` command to generate an Excel file:
+Once you have this, you can pass it to the `zefaker` command to generate a file:
+
+### Exporting as a CSV File
+
+```sh
+$ zefaker -f person.groovy -rows 1000 -output people.csv -csv 
+```
+
+The example command, above, generates a file named **people.csv** with **1000 rows** 
+populated with data generated using the Faker functions specified in the Groovy script.
 
 ### Exporting as an Excel file
 
 ```sh
-$ zefaker -f=person.groovy -sheet="Persons" -rows=100 -output=people.xlsx
+$ zefaker -f person.groovy -rows 1000 -output people.xlsx -sheet People
 ```
 
-The example command, above, generates a file named **people.xlsx** with a **100 rows** populated
-with data generated using the Faker functions specified in the Groovy script.
+The example command, above, generates a file named **people.xlsx** with **1000 records**.
 
 > _Bonus / Shameless plug_: If you're using Java, you can process the generated files _quickly_ and 
 _efficiently_ using [zerocell](https://github.com/creditdatamw/zerocell).
 
-
 ### Exporting as an SQL file
 
 ```sh
-$ zefaker -f=person.groovy -sql -table="people" -rows=100 -output=people-data.sql
+$ zefaker -f person.groovy -rows 1000 -output people.sql -sql -table people 
 ```
 
-The example command, above, generates a file named **people-data.sql** with a 
-**100 INSERT statements** which have random data in teh _VALUES_ clause
-generated using the Faker functions specified in the Groovy script.
+The example command, above, generates a file named **people.sql** with 
+**1000 INSERT statements** which have random data in the _VALUES_ clause.
+
+### Exporting as a JSON file
+
+```sh
+$ zefaker -f person.groovy -rows 1000 -output people.json -json 
+```
+
+The example command, above, generates a file named **people.json** with **1000 JSON objects**.
 
 
 ## Installation
