@@ -1,12 +1,14 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
-    id 'net.ltgt.apt-eclipse' version '0.21'
-    id 'application'
     id 'groovy'
+
+    id 'application'
+
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
