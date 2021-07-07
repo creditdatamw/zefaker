@@ -105,6 +105,8 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         if (exportAsJson) {
             fileGenerator = new JsonFileGenerator()
+        } else if (exportAsJsonLines) {
+            fileGenerator = new JsonLinesFileGenerator()
         } else if (exportAsCsv) {
             fileGenerator = new CsvGenerator(csvOptions)
         } else if (exportAsSql) {
