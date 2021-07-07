@@ -18,7 +18,6 @@ import java.util.concurrent.CountDownLatch
  *   <li>{@code ColumnQuotes sqlQuoteMode}</li>
  *   <li>{@code int maxRows}</li>
  *   <li>{@code int streamingBatchSize}</li>
- *   <li>{@code boolean exportAsSql}</li>
  * </ul>
  */
 abstract class ZeFaker extends groovy.lang.Script {
@@ -93,7 +92,7 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         if (verbose) {
             System.out.println("Generating File: " + filePath)
-            if (exportAsSql) {
+            if (format == "sql") {
                 System.out.println("Table: " + tableName)
             } else {   
                 System.out.println("Sheet: " + sheetName)
@@ -103,31 +102,43 @@ abstract class ZeFaker extends groovy.lang.Script {
 
         def fileGenerator
 
-        if (exportAsJson) {
-            fileGenerator = new JsonFileGenerator()
-        } else if (exportAsJsonLines) {
-            fileGenerator = new JsonLinesFileGenerator()
-        } else if (exportAsCsv) {
-            fileGenerator = new CsvGenerator(csvOptions)
-        } else if (exportAsSql) {
-            if (sqlCopyMode) {
+        def useBufferedWriter = true
+        switch(format) {
+            case "sql":
+                if (sqlCopyMode) {
+                    fileGenerator = new SqlCopyFileGenerator(tableName)
+                } else {
+                    fileGenerator = new SqlFileGenerator(tableName, sqlQuoteMode)
+                }    
+                break
+            case "sqlcopy":
                 fileGenerator = new SqlCopyFileGenerator(tableName)
-            } else {
-                fileGenerator = new SqlFileGenerator(tableName, sqlQuoteMode)
-            }
-        } else {
-            fileGenerator = new ExcelFileGenerator(sheetName, streamingBatchSize)
+                break
+            case "json":
+                fileGenerator = new JsonFileGenerator()
+                break
+            case "jsonl":
+                fileGenerator = new JsonLinesFileGenerator()
+                break
+            case "csv":
+                fileGenerator = new CsvGenerator(csvOptions)
+                break
+            case "excel":
+            default:
+                useBufferedWriter = false
+                fileGenerator = new ExcelFileGenerator(sheetName, streamingBatchSize)
         }
 
         final Flushable fw
-        if (exportAsExcel) {
-            fw = Files.newOutputStream(filePath)
-        } else {
+        if (useBufferedWriter) {
             fw = Files.newBufferedWriter(filePath)
+        } else {
+            fw = Files.newOutputStream(filePath)
         }
         
         try {
             fileGenerator.generate(faker, columnDefs, maxRows, fw)
+            fw.flush()
         } catch(Exception e) {
             throw new RuntimeException("An error occurred: " + e.getMessage(), e)
         } finally {
