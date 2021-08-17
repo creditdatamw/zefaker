@@ -1,54 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zefaker Web</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/codemirror.css">
+  <script src="js/codemirror.js"></script>
+  <script src="js/groovy.js"></script>
+  <script src="js/matchbrackets.js"></script>
+  <title>Zefaker Web</title>
 </head>
+
 <body>
-    <h1>Zefaker Web</h1>
+  <h1>Zefaker Web</h1>
+
+  <form method="post" action="/generate">
     <div id="zefaker-editor">
+      <textarea id="zefaker-editor-textarea" name="code"></textarea>
     </div>
-    
+
     <div class="output-options">
-        <div class="form">
-            <input type="text" name="fileName" placeholder="fileName">
-            
-            <select name="outputType" id="">
-                <option value="">Please select output format</option>
-                <option value="sql">SQL</option>
-                <option value="csv">CSV</option>
-                <option value="json">JSON</option>
-                <option value="jsonl">JSON Lines</option>
-                <option value="excel">Excel</option>
-            </select>
+      <div class="form">
+        <fieldset name="general-options">
+          <label for="fileName">FileName</label>
+          <input type="text" name="fileName" placeholder="fileName">
+  
+          <label for="format">File Type</label>
+          <select name="format" id="">
+            <option value="">Please select output format</option>
+            <option value="sql">SQL</option>
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+            <option value="jsonl">JSON Lines</option>
+            <option value="excel">Excel</option>
+          </select>
+  
+          <label for="rows">Number of Records</label>
+          <input type="number" name="rows" placeholder="Number of records to generate">
+        </fieldset>
 
-            <input type="number" name="rows" placeholder="Number of records to generate">
-            <input type="text" name="sheet" placeholder="Select Sheet Name for Excel files">
-            <input type="text" name="table" placeholder="Choose table name for SQL output">
+        <fieldset>
+          <legend>SQL Specific options</legend>
 
-            <input type="text" name="sqlquote" placeholder="SQL Quote style">
-            <select name="sqlquote" id="">
-                <option value="">Please select SQL Quote Style</option>
-                <option value="none">None</option>
-                <option value="postgres">Postgres <code>"column"</code></option>
-                <option value="mssql">SQL Server <code>[column]</code></option>
-                <option value="mysql">MySQL <code>`column`</code></option>
-            </select>
-        </div>
+          <label for="table">Tablename</label>
+          <input type="text" name="table" placeholder="Choose table name for SQL output">
 
-        <button>Generate File</button>
+          <label for="sqlquote">Quote Columns as</label>
+          <select name="sqlquote" id="">
+            <option value="">Please select SQL Quote Style</option>
+            <option value="none">None</option>
+            <option value="postgres">Postgres <code>"column"</code></option>
+            <option value="mssql">SQL Server <code>[column]</code></option>
+            <option value="mysql">MySQL <code>`column`</code></option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend>Excel Specific options</legend>
+          <label for="sheet">Sheet Name</label>
+          <input type="text" name="sheet" placeholder="Select Sheet Name for Excel files">
+        </fieldset>
+      </div>
+
+      <button>Generate File</button>
     </div>
+  </form>
 
-    <script>
-
-        $(function() {
-            var $generate = $('#generate-files')
-
-
-
-        })
-    </script>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("zefaker-editor-textarea"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      mode: "text/x-groovy"
+    });
+   
+  </script>
 </body>
+
 </html>
