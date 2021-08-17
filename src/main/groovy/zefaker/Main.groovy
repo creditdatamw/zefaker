@@ -5,9 +5,9 @@ import groovy.cli.picocli.CliBuilder
 import org.codehaus.groovy.control.CompilerConfiguration
 
 def cli = new CliBuilder(name: 'zefaker')
-cli.f(type: File, required: true, 'Groovy file with column definitions')
+cli.f(type: File, required: false, 'Groovy file with column definitions')
 cli.x(type: Boolean, defaultValue: 'false', 'Overwrite existing file')
-cli.output(type: String, required: true, 'File to write to, e.g. generated.xlsx')
+cli.output(type: String, required: false, 'File to write to, e.g. generated.xlsx')
 cli.sheet(type: String, defaultValue: 'Data', 'Sheet name in the generated Excel file')
 cli.rows(type: Integer, defaultValue: '10', 'Number of rows to generate')
 cli.table(type: String, defaultValue: 'Data', 'Table name in the generated SQL file')
@@ -17,10 +17,16 @@ cli.json(type: Boolean, defaultValue: 'false', 'Export generated data as JSON fi
 cli.jsonl(type: Boolean, defaultValue: 'false', 'Export generated data as JSON Lines file')
 cli.csv(type: Boolean, defaultValue: 'false', 'Export generated data as a CSV file')
 cli.vvv(type: Boolean, defaultValue: 'false', 'Show verbose output')
+cli.web(type: Boolean, defaultValue: 'false', 'Start webserver')
 
 def options = cli.parse(args)
 
 if (options == null) {
+    return
+}
+
+if (options.web) {
+    new ZefakerWebserver().run()
     return
 }
 
