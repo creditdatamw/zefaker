@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zefaker Web</title>
+</head>
+<body>
+    <h1>Zefaker Web</h1>
+    <div id="zefaker-editor">
+    </div>
+    
+    <div class="output-options">
+        <div class="form">
+            <input type="text" name="fileName" placeholder="fileName">
+            
+            <select name="outputType" id="">
+                <option value="">Please select output format</option>
+                <option value="sql">SQL</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+                <option value="jsonl">JSON Lines</option>
+                <option value="excel">Excel</option>
+            </select>
+
+            <input type="number" name="rows" placeholder="Number of records to generate">
+            <input type="text" name="sheet" placeholder="Select Sheet Name for Excel files">
+            <input type="text" name="table" placeholder="Choose table name for SQL output">
+
+            <input type="text" name="sqlquote" placeholder="SQL Quote style">
+            <select name="sqlquote" id="">
+                <option value="">Please select SQL Quote Style</option>
+                <option value="none">None</option>
+                <option value="postgres">Postgres <code>"column"</code></option>
+                <option value="mssql">SQL Server <code>[column]</code></option>
+                <option value="mysql">MySQL <code>`column`</code></option>
+            </select>
+        </div>
+
+        <button>Generate File</button>
+    </div>
+
+    <script>
+
+        $(function() {
+            var $generate = $('#generate-files')
+
+
+
+        })
+    </script>
+</body>
+</html>
