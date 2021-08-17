@@ -22,6 +22,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.sparkjava/spark-core
     implementation "com.sparkjava:spark-core:$sparkJavaVersion"
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    runtimeOnly "ch.qos.logback:logback-classic:$logbackVersion"
+
 }
 
 task createStartScripts(type: CreateStartScripts) {
