@@ -13,15 +13,17 @@ class ZefakerWebserver {
         redirect.get("/", "/index.html")
 
         post("/generate",  { request, response ->
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            
             def binding = new Binding()
 
             def bodyAsText = request.body()
 
-            def outFileName = request.getQueryParams("fileName")
-            def exportFormat = request.getQueryParams("format")
-            binding.setProperty("sheetName", request.getQueryParams("sheet"))
-            binding.setProperty("maxRows", request.getQueryParams("rows"))
-            binding.setProperty("tableName", request.getQueryParams("table"))
+            def outFileName = request.queryParams("fileName")
+            def exportFormat = request.queryParams("format")
+            binding.setProperty("sheetName", request.queryParams("sheet"))
+            binding.setProperty("maxRows", request.queryParams("rows"))
+            binding.setProperty("tableName", request.queryParams("table"))
 
             def config = new CompilerConfiguration()
             config.scriptBaseClass = "zefaker.ZeFaker"
@@ -56,11 +58,17 @@ class ZefakerWebserver {
                     outputContentType = "text/csv"
                     extension = ".csv"
                     break
-                default:
+                case "xlsx":
                     binding.setProperty("exportAsExcel", true)
                     outputContentType = "application/vnd+msexcel"
                     extension = ".xlsx"
+                    break
+                default:
+                    response.body("Invalid file format type")
+                    response.type("application/json")
+                    return response
             }
+            
             // Options for the SQL output
             try {
                 tmpFileName = Files.newTempFile("zefaker")
