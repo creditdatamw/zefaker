@@ -10,6 +10,7 @@
   <script src="js/groovy.js"></script>
   <script src="js/matchbrackets.js"></script>
   <script src="js/axios.min.js"></script>
+  <script src="js/filesaver.js"></script>
   <title>Zefaker Web</title>
 </head>
 
@@ -101,7 +102,7 @@ generateFrom([
     document.getElementById('zefaker-form').addEventListener("submit", (event) => {
       event.preventDefault();
       let formData = {
-        fileName: "test",
+        fileName: "test.sql",
         code: editor.getValue(),
         format: "sql",
         sheet: "Sheet 1",
@@ -117,22 +118,26 @@ generateFrom([
             type: 'json',
             url: url,
             data: JSON.stringify(formData),
+            responseType: 'blob',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Accept': '*/*'
             }
         })
         .then(function checkStatus(response) {
-            if (! response.ok) {
+            if (response.status != 200) {
                 let error = new Error(response.statusText);
                 error.response = response;
                 throw error;
             }
             return response;    
         })
+        .then(response => saveAs(response.data, formData.fileName))
         // parse the JSON response for OK responses
         //.then(response => response.json())
         //.then(json => successCallback(json))
         .catch(err => {
+            console.log(err)
             // General conenction error
             if ('response' in err) {
                 const response = err.response;
@@ -142,9 +147,7 @@ generateFrom([
                         fileAlreadyExists: true
                     });
                 }
-                return response.json().then(data => errorCallback(data));
             }
-            return errorCallback(null)
         });
         
         return false;
