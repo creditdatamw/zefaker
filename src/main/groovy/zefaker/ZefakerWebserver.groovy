@@ -50,34 +50,29 @@ class ZefakerWebserver {
             requestDto.fileName = "data"
         }
         def extension = ""
-        def outputContentType = "application/json"
+        def outputContentType = "application/octet-stream; charset=utf-8"
         
         // Options for the Excel output
         switch(requestDto.format) {
             case "sql":
             case "sqlcopy":
                 requestDto.exportAsSql = true
-                outputContentType = "text/plain"
                 extension = ".sql"
                 break
             case "json":
                 requestDto.exportAsJson = true
-                outputContentType = "application/json"
                 extension = ".json"
                 break
             case "jsonl":
                 requestDto.exportAsJsonLines = true
-                outputContentType = "application/json"
                 extension = ".jsonl"
                 break
             case "csv":
                 requestDto.exportAsCsv = true
-                outputContentType = "text/csv"
                 extension = ".csv"
                 break
             case "xlsx":
                 requestDto.exportAsExcel = true
-                outputContentType = "application/vnd+msexcel"
                 extension = ".xlsx"
                 break
             default:
