@@ -9,15 +9,37 @@
   <script src="js/codemirror.js"></script>
   <script src="js/groovy.js"></script>
   <script src="js/matchbrackets.js"></script>
+  <script src="js/axios.min.js"></script>
   <title>Zefaker Web</title>
 </head>
 
 <body>
   <h1>Zefaker Web</h1>
 
-  <form method="post" action="/generate">
+  <form id="zefaker-form" method="post" action="/generate">
     <div id="zefaker-editor">
-      <textarea id="zefaker-editor-textarea" name="code"></textarea>
+      <textarea id="zefaker-editor-textarea" name="code">
+// Welcome to zefaker!
+
+// This is an example, you can put your code here
+import java.util.concurrent.atomic.AtomicInteger
+
+autoIncrementID = new AtomicInteger(0)
+
+id        = column(index= 0, name= "id")
+firstName = column(index= 1, name= "firstName")
+lastName  = column(index= 2, name= "lastName")
+age       = column(index= 3, name= "age")
+userStatus= column(index= 4, name= "userStatus")
+
+generateFrom([
+  (id):{ faker -> autoIncrementID.incrementAndGet() },
+    (firstName): { faker -> faker.name().firstName() },
+    (lastName): { faker -> faker.name().lastName() },
+    (age): { faker -> faker.number().numberBetween(18, 70) },
+    (userStatus): { faker -> faker.options().option("active", "unverified account", "disabled:flagged") }
+])
+      </textarea>
     </div>
 
     <div class="output-options">
@@ -73,7 +95,60 @@
       matchBrackets: true,
       mode: "text/x-groovy"
     });
-   
+
+    
+
+    document.getElementById('zefaker-form').addEventListener("submit", (event) => {
+      event.preventDefault();
+      let formData = {
+        fileName: "test",
+        code: editor.getValue(),
+        format: "sql",
+        sheet: "Sheet 1",
+        sqlquote: "postgres",
+        rows: 100,
+        table: 'data-thing',
+      }
+
+      const url = "/generate";
+
+      axios({
+            method: 'post',
+            type: 'json',
+            url: url,
+            data: JSON.stringify(formData),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        })
+        .then(function checkStatus(response) {
+            if (! response.ok) {
+                let error = new Error(response.statusText);
+                error.response = response;
+                throw error;
+            }
+            return response;    
+        })
+        // parse the JSON response for OK responses
+        //.then(response => response.json())
+        //.then(json => successCallback(json))
+        .catch(err => {
+            // General conenction error
+            if ('response' in err) {
+                const response = err.response;
+                if (response.status === 409) {
+                    return Promise.resolve({
+                        message: 'File uploaded already exists on the server',
+                        fileAlreadyExists: true
+                    });
+                }
+                return response.json().then(data => errorCallback(data));
+            }
+            return errorCallback(null)
+        });
+        
+        return false;
+      });
   </script>
 </body>
 
