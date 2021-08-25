@@ -173,8 +173,8 @@ generateFrom([
           <h5 class="modal-title">Processing ...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <p>Please wait while processing your request</p>
+        <div class="modal-body text-center">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Please wait while processing your request...</span></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -185,6 +185,8 @@ generateFrom([
   
 
   <script type="text/javascript">
+    const spinnerHtml = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Please wait while processing your request...</span></div>';
+
     var editor = CodeMirror.fromTextArea(document.getElementById("zefaker-editor-textarea"), {
       lineNumbers: true,
       matchBrackets: true,
@@ -193,10 +195,14 @@ generateFrom([
     });
     
     var progressModalEl = document.getElementById('progressModal'),
-      progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
-    
+      progressModal = new bootstrap.Modal(document.getElementById('progressModal')),
+      modalBody = progressModalEl.querySelector('.modal-body');
+
     document.getElementById('zefaker-form').addEventListener("submit", (event) => {
       event.preventDefault();
+      
+      modalBody.innerHTML = spinnerHtml
+
       progressModal.show()
 
       const format = document.getElementById('format').value;
@@ -220,7 +226,7 @@ generateFrom([
             responseType: 'blob',
             headers: {
               'Content-Type': 'application/json',
-              'Accept': '*/*'
+              'Accept': 'application/octet-stream;charset=utf-8,application/json'
             }
         })
         .then(function checkStatus(response) {
@@ -237,8 +243,7 @@ generateFrom([
           progressModal.hide()
         })
         .catch(err => {
-          var modalBodyP = progressModalEl.querySelector('.modal-body p')
-          modalBodyP.innerText = 'Failed to generate file. ' + err
+          modalBody.innerHTML = '<div class="error hidden">Failed to generate file: ' + err + '</div>'
           // progressModal.hide()
             // General conenction error
             if ('response' in err) {
