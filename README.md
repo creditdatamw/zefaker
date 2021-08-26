@@ -167,6 +167,13 @@ $ gradlew clean build
 
 After this, the build file will be in `build/libs/zefaker-all.jar` - it is an executable Jar file.
 
+## Using Docker
+
+You will have to build the image locally at the moment, :). Then run:
+
+```sh
+$ docker run --volume "$(pwd):/tmp:rw" zefaker -f /tmp/example.groovy -output /tmp/first.sql -sql 
+```
 ## IDEAS / TODO
 
 This is simple CLI and so far it does what we need, but it can always be improved.
