@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch
  *   <li>{@code boolean exportAsSql}</li>
  * </ul>
  */
-abstract class ZeFaker extends groovy.lang.Script {
+abstract class ZeFaker extends Script {
     Faker faker
     int streamingBatchSize = 100
     private ColumnQuotes sqlQuoteMode = ColumnQuotes.NONE
@@ -39,8 +39,9 @@ abstract class ZeFaker extends groovy.lang.Script {
     //
     // Support for Postgresql COPY format only, currently
     void useSQLCOPY() {
-        sqlCopyMode = true && sqlQuoteMode == ColumnQuotes.POSTGRESQL
-        if (!sqlCopyMode) System.err.println("Only Postgresql is supported for useSQLCOPY, please use `quoteIdentifiersAs(\"postgres\")` in your Zefaker script")
+        sqlCopyMode = true
+        if (sqlQuoteMode != ColumnQuotes.POSTGRESQL)
+            System.err.println("Only Postgresql is supported for useSQLCOPY, please use `quoteIdentifiersAs(\"postgres\")` in your Zefaker script")
     }
 
     void quoteIdentifiersAs(stringVal) {
