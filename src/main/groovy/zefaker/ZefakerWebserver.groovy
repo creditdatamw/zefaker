@@ -82,14 +82,14 @@ class ZefakerWebserver {
                 return
         }
         
-        if (requestDto.exportAsSql && (requestDto.table == null || requestDto.table.isEmpty()) {
+        if (requestDto.exportAsSql && (requestDto.table == null || requestDto.table.isEmpty())) {
             response.body("Table name must be specified for SQL output")
             response.type("application/json")
             response.status(400)
             return
         }
         
-        if (requestDto.exportAsExcel && (requestDto.sheet == null || requestDto.sheet.isEmpty()) {
+        if (requestDto.exportAsExcel && (requestDto.sheet == null || requestDto.sheet.isEmpty())) {
             response.body("Sheet Name must be specified for Excel output")
             response.type("application/json")
             response.status(400)
