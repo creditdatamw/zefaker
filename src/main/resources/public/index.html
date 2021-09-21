@@ -82,7 +82,7 @@ age       = column(index= 3, name= "age")
 userStatus= column(index= 4, name= "userStatus")
 
 generateFrom([
-  (id):{ faker -> autoIncrementID.incrementAndGet() },
+    (id):{ faker -> autoIncrementID.incrementAndGet() },
     (firstName): { faker -> faker.name().firstName() },
     (lastName): { faker -> faker.name().lastName() },
     (age): { faker -> faker.number().numberBetween(18, 70) },

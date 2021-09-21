@@ -82,7 +82,20 @@ class ZefakerWebserver {
                 return
         }
         
-        // Options for the SQL output
+        if (requestDto.exportAsSql && (requestDto.table == null || requestDto.table.isEmpty()) {
+            response.body("Table name must be specified for SQL output")
+            response.type("application/json")
+            response.status(400)
+            return
+        }
+        
+        if (requestDto.exportAsExcel && (requestDto.sheet == null || requestDto.sheet.isEmpty()) {
+            response.body("Sheet Name must be specified for Excel output")
+            response.type("application/json")
+            response.status(400)
+            return
+        }
+
         try {
             def tmpInputFilename = Files.createTempFile("zefaker", ".groovy")
             def tmpOutputFilename = Files.createTempFile("zout-", extension)
