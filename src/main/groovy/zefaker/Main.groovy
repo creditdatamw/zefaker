@@ -35,7 +35,6 @@ def config = new CompilerConfiguration()
 config.scriptBaseClass = "zefaker.ZeFaker"
 def groovyShell = new GroovyShell(this.class.classLoader, binding, config)
 
-binding.setProperty("faker", new Faker())
 binding.setProperty("verbose", options.vvv)
 binding.setProperty("maxRows", options.rows)
 binding.setProperty("outputFile", options.output)

@@ -2,7 +2,7 @@
 // quoteIdentifiersAs("mysql")
 // quoteIdentifiersAs("postgres")
 // quoteIdentifiersAs("mssql")
-
+locale("en-GB")
 
 // Uncomment the line below to instruct zefaker to output data using COPY
 // NB: Only postgresql COPY is supported at the moment. 

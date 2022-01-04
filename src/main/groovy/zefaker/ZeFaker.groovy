@@ -34,6 +34,14 @@ abstract class ZeFaker extends Script {
         return new ColumnDef(index, name, { faker -> "" })
     }
 
+    void locale(String localeTag) {
+        this.faker = new Faker(Locale.forLanguageTag(localeTag))
+    }
+
+    void useFaker(fakerInstance) {
+        this.faker = fakerInstance
+    }
+
     // User should call this to indicate they want SQL COPY format created
     // instead of regular INSERTS
     //

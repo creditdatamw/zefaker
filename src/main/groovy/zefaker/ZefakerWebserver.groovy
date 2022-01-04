@@ -114,7 +114,6 @@ class ZefakerWebserver {
             binding.setProperty("exportAsCsv", requestDto.exportAsCsv)
             binding.setProperty("exportAsExcel", requestDto.exportAsExcel)
             binding.setProperty("overwriteExisting", true)
-            binding.setProperty("faker", new Faker())
             binding.setProperty("verbose", false)
             binding.setProperty("outputFile", tmpOutputFilename.toString())
 
