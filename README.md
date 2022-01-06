@@ -34,6 +34,12 @@ Create a file named `person.groovy` and place the following content:
 ```groovy
 // person.groovy
 
+locale("en-GB") // tells Java Faker to use the given tag for the Locale.
+
+// or use a custom faker
+// import com.github.javafaker.Faker
+// useFaker(new Faker(Locale.getLanguageTag("en-GB")))
+
 firstName = column(index= 0, name="FirstName")
 lastName  = column(index= 1, name="LastName")
 age       = column(index= 2, name="Age")
@@ -118,6 +124,12 @@ Usage: zefaker [options]
   -x              Overwrite existing file
 ```
 
+### Web based UI
+
+You can run the following `java -jar zefaker.jar -web` to start a webserver at port `4567`:
+
+![[]](zefakerweb.png)
+
 ### In the Groovy Script
 
 Within your Groovy script you are required to use the *generateFrom(<map>)* 
@@ -189,4 +201,4 @@ Pull Requests are welcome. If you run into a problem, create an issue and we wil
 
 ---
 
-Copyright (c) 2020, Credit Data CRB Ltd
+Copyright (c) 2022, Credit Data CRB Ltd
