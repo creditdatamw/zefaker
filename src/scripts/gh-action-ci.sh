@@ -17,10 +17,10 @@ SAVED_PATH=${PATH}
 JAVA_HOME=${BASELINE_JAVA_HOME}
 PATH=${BASELINE_JAVA_HOME}/bin:$PATH
 export JAVA_HOME PATH
-gradlew ${OPTS} clean build
+./gradlew ${OPTS} clean build
 
 # switch back to the requested JDK
 PATH=${SAVED_PATH}
 JAVA_HOME=${BUILD_JAVA_HOME}
 export JAVA_HOME PATH
-gradlew clean build
+./gradlew clean build
