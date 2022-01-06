@@ -4,7 +4,7 @@
 set -xe
 
 JDK_VERSION=$1
-OPTS="-Dbasepom.check.skip-all=true -Dbasepom.check.skip-enforcer=false -B"
+OPTS="--no-daemon --no-build-cache --quiet"
 
 # This runs with a modern build JDK for building because that is what we do
 # anyway. Runs the tests with the matrix JDKs because that is what the users do.
@@ -23,4 +23,4 @@ export JAVA_HOME PATH
 PATH=${SAVED_PATH}
 JAVA_HOME=${BUILD_JAVA_HOME}
 export JAVA_HOME PATH
-./gradlew clean build
+./gradlew ${OPTS} clean build
