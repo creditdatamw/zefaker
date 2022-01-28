@@ -151,7 +151,8 @@ generateFrom([
               </fieldset>
             </div>
             <div class="d-grid gap-2 col-6 mx-auto">
-              <button type="submit" class="btn btn-primary btn-block btn-lg">Generate File</button>
+              <button type="submit" class="btn btn-primary btn-block btn-lg">Generate Data File</button>
+              <button type="button" id="btnSaveScript" class="btn btn-primary btn-sm">Save Script</button>
             </div>
           
             <div class="col-sm-12 col-md-12">
@@ -196,8 +197,19 @@ generateFrom([
     
     var progressModalEl = document.getElementById('progressModal'),
       progressModal = new bootstrap.Modal(document.getElementById('progressModal')),
-      modalBody = progressModalEl.querySelector('.modal-body');
+      modalBody = progressModalEl.querySelector('.modal-body'),
+      btnSaveScript = document.getElementById("btnSaveScript");
 
+    // Save script handler
+    btnSaveScript.addEventListener('click', (event) => {
+      event.preventDefault();
+      var scriptBlob = new Blob([editor.getValue()], {type: "text/groovy;charset=utf-8"});
+      saveAs(scriptBlob, "zefaker.groovy");
+
+      return false;
+    })
+
+    // Handler for the form
     document.getElementById('zefaker-form').addEventListener("submit", (event) => {
       event.preventDefault();
       
