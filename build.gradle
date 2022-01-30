@@ -17,8 +17,8 @@ dependencies {
     implementation "org.apache.poi:poi-ooxml:$poiVersion"
     implementation "com.opencsv:opencsv:$opencsvVersion"
     implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation "org.codehaus.groovy:groovy:$groovyVersion"
-    implementation "org.codehaus.groovy:groovy-cli-picocli:$groovyVersion"
+    implementation "org.apache.groovy:groovy:$groovyVersion"
+    implementation "org.apache.groovy:groovy-cli-picocli:$groovyVersion"
 
     // https://mvnrepository.com/artifact/com.sparkjava/spark-core
     implementation "com.sparkjava:spark-core:$sparkJavaVersion"
