@@ -1,15 +1,17 @@
 Zé Faker
 ========
 
-`zefaker` is a command-line tool that helps you to generate and export data into CSV, Excel and SQL files.
+`zefaker` is a command-line tool that helps developers generate and export data into CSV, Excel and SQL files for testing their applications.
 
 ## Features
 
-* Random data generation via [java-faker](https://github.com/DiUS/java-faker)
+* Random data generation via [java-faker](https://github.com/DiUS/java-faker) with Locale support
 * Export to CSV
+* Export to Excel Sheet
 * Export to SQL INSERTS
-* Export to Excel files
+* Export to SQL COPY (for PostgreSQL)
 * Export to JSON
+* Export to JSON Lines
 
 ## Why would I use this?
 
@@ -175,17 +177,10 @@ You will have to build the image locally at the moment, :). Then run:
 ```sh
 $ docker run --volume "$(pwd):/tmp:rw" zefaker -f /tmp/example.groovy -output /tmp/first.sql -sql 
 ```
-## IDEAS / TODO
-
-This is simple CLI and so far it does what we need, but it can always be improved.
-Here are some ideas:
-
-- Decrease the size of the JAR using either Java 9+ modules or Proguard to strip out stuff we don't need
-- Build a native binary using [Graal](https://www.graalvm.org/)
-- Handle exceptions raised by/in the input script better
 
 ## CONTRIBUTING
 
+Help out by resolving an issue in the [issue tracker](https://github.com/creditdatamw/zefaker/issues). 
 Pull Requests are welcome. If you run into a problem, create an issue and we will try to resolve it.
 
 ---
