@@ -91,6 +91,15 @@ abstract class ZeFaker extends Script {
         if (faker == null)
             faker = new Faker()
 
+        if (columnDefs.isEmpty()) {
+            throw new RuntimeException("No columns specified")
+        }
+
+        // Support string columns in the specification
+        if (columnDefs.keySet().iterator().next() instanceof String) {
+            columnDefs = ColumnDef.fromStringColumns(columnDefs)
+        }
+        
         this._setAndSort(columnDefs)
 
         def filePath = Paths.get(outputFile)
