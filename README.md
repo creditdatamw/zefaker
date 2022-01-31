@@ -36,28 +36,17 @@ Create a file named `person.groovy` and place the following content:
 
 locale("en-GB") // tells Java Faker to use the given tag for the Locale.
 
-// or use a custom faker
+// You can also use a custom faker
 // import com.github.javafaker.Faker
 // useFaker(new Faker(Locale.getLanguageTag("en-GB")))
 
-firstName = column(index= 0, name="FirstName")
-lastName  = column(index= 1, name="LastName")
-age       = column(index= 2, name="Age")
-
-accountStatus = column(index=3, name="Account Status")
-
-plan  = column(index=5, name="Plan")
-
-columns = [
-    (firstName): { faker -> faker.name().firstName() },
-    (lastName): { faker -> faker.name().lastName() },
-    (age): { faker -> faker.number().numberBetween(18, 70) },
-    (accountStatus): { faker -> faker.options().option("Open", "Closed") },
-    (plan): { faker -> "FREE" } // doesn't necessarily have to be a faker value
-]
-
-// NOTE: This last line is necessary for zefaker to work.
-generateFrom columns
+generateFrom([
+    "FirstName": { faker -> faker.name().firstName() },
+    "LastName": { faker -> faker.name().lastName() },
+    "Age": { faker -> faker.number().numberBetween(18, 70) },
+    "AccountStatus": { faker -> faker.options().option("Open", "Closed") },
+    "Plan": { faker -> "FREE" } // doesn't necessarily have to be a faker value
+])
 ```
 
 Once you have this, you can pass it to the `zefaker` command to generate a file:
