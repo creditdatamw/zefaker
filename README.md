@@ -1,15 +1,17 @@
 Zé Faker
 ========
 
-`zefaker` is a command-line tool that helps you to generate and export data into CSV, Excel and SQL files.
+`zefaker` is a command-line tool that helps developers generate and export data into CSV, Excel and SQL files for testing their applications.
 
 ## Features
 
-* Random data generation via [java-faker](https://github.com/DiUS/java-faker)
+* Random data generation via [java-faker](https://github.com/DiUS/java-faker) with Locale support
 * Export to CSV
+* Export to Excel Sheet
 * Export to SQL INSERTS
-* Export to Excel files
+* Export to SQL COPY (for PostgreSQL)
 * Export to JSON
+* Export to JSON Lines
 
 ## Why would I use this?
 
@@ -36,28 +38,17 @@ Create a file named `person.groovy` and place the following content:
 
 locale("en-GB") // tells Java Faker to use the given tag for the Locale.
 
-// or use a custom faker
+// You can also use a custom faker
 // import com.github.javafaker.Faker
 // useFaker(new Faker(Locale.getLanguageTag("en-GB")))
 
-firstName = column(index= 0, name="FirstName")
-lastName  = column(index= 1, name="LastName")
-age       = column(index= 2, name="Age")
-
-accountStatus = column(index=3, name="Account Status")
-
-plan  = column(index=5, name="Plan")
-
-columns = [
-    (firstName): { faker -> faker.name().firstName() },
-    (lastName): { faker -> faker.name().lastName() },
-    (age): { faker -> faker.number().numberBetween(18, 70) },
-    (accountStatus): { faker -> faker.options().option("Open", "Closed") },
-    (plan): { faker -> "FREE" } // doesn't necessarily have to be a faker value
-]
-
-// NOTE: This last line is necessary for zefaker to work.
-generateFrom columns
+generateFrom([
+    "FirstName": { faker -> faker.name().firstName() },
+    "LastName": { faker -> faker.name().lastName() },
+    "Age": { faker -> faker.number().numberBetween(18, 70) },
+    "AccountStatus": { faker -> faker.options().option("Open", "Closed") },
+    "Plan": { faker -> "FREE" } // doesn't necessarily have to be a faker value
+])
 ```
 
 Once you have this, you can pass it to the `zefaker` command to generate a file:
@@ -186,17 +177,10 @@ You will have to build the image locally at the moment, :). Then run:
 ```sh
 $ docker run --volume "$(pwd):/tmp:rw" zefaker -f /tmp/example.groovy -output /tmp/first.sql -sql 
 ```
-## IDEAS / TODO
-
-This is simple CLI and so far it does what we need, but it can always be improved.
-Here are some ideas:
-
-- Decrease the size of the JAR using either Java 9+ modules or Proguard to strip out stuff we don't need
-- Build a native binary using [Graal](https://www.graalvm.org/)
-- Handle exceptions raised by/in the input script better
 
 ## CONTRIBUTING
 
+Help out by resolving an issue in the [issue tracker](https://github.com/creditdatamw/zefaker/issues). 
 Pull Requests are welcome. If you run into a problem, create an issue and we will try to resolve it.
 
 ---

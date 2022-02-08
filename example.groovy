@@ -20,10 +20,10 @@ age       = column(index= 2, name= "age")
 accountStatus = column(index=3, name="account_status")
 
 columns = [
-    (firstName): { faker -> faker.name().firstName()  },
-    (lastName): { faker -> faker.name().lastName() },
-    (age): { faker -> faker.number().numberBetween(18, 70) },
-    (accountStatus): { faker -> faker.options().option("Open", "Closed") }
+    "first_name": { faker -> faker.name().firstName()  },
+    "last_name": { faker -> faker.name().lastName() },
+    "age": { faker -> faker.number().numberBetween(18, 70) },
+    "account_status": { faker -> faker.options().option("Open", "Closed") }
 ]
 // NOTE: This last line is necessary for zefaker to work.
 generateFrom columns
