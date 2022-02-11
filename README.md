@@ -39,10 +39,10 @@ Create a file named `person.groovy` and place the following content:
 locale("en-GB") // tells Java Faker to use the given tag for the Locale.
 
 // You can also use a custom faker
-// import com.github.javafaker.Faker
+// import net.datafaker.Faker
 // useFaker(new Faker(Locale.getLanguageTag("en-GB")))
 
-generateFrom([
+generateData([
     "FirstName": { faker -> faker.name().firstName() },
     "LastName": { faker -> faker.name().lastName() },
     "Age": { faker -> faker.number().numberBetween(18, 70) },

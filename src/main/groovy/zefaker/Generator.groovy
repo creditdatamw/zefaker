@@ -1,6 +1,6 @@
 package zefaker
 
-import com.github.javafaker.Faker
+import net.datafaker.Faker
 
 /**
  * Generator interface for supported generator classes.
