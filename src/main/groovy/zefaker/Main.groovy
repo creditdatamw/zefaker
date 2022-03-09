@@ -1,6 +1,6 @@
 package zefaker
 
-import com.github.javafaker.Faker
+import net.datafaker.Faker
 import groovy.cli.picocli.CliBuilder
 import org.codehaus.groovy.control.CompilerConfiguration
 

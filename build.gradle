@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.javafaker:javafaker:$javaFakerVersion"
+    implementation "net.datafaker:datafaker:$dataFakerVersion"
     implementation "org.apache.poi:poi:$poiVersion"
     implementation "org.apache.poi:poi-ooxml:$poiVersion"
     implementation "com.opencsv:opencsv:$opencsvVersion"

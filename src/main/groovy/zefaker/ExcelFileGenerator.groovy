@@ -1,6 +1,6 @@
 package zefaker
 
-import com.github.javafaker.Faker
+import net.datafaker.Faker
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.util.WorkbookUtil
 import org.apache.poi.xssf.streaming.SXSSFWorkbook

@@ -2,7 +2,7 @@ package zefaker
 
 import java.util.concurrent.atomic.AtomicLong
 
-import com.github.javafaker.Faker
+import net.datafaker.Faker
 
 import java.util.stream.Collectors
 
