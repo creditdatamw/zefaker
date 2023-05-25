@@ -1,130 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/codemirror.css">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/codemirror.js"></script>
-  <script src="js/groovy.js"></script>
-  <script src="js/matchbrackets.js"></script>
-  <script src="js/axios.min.js"></script>
-  <script src="js/filesaver.js"></script>
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <title>Zefaker Web</title>
-  <style type="text/css">
-    body {
-      background-color: #fafafa;
-    }
-    .CodeMirror {
-      border: 1px solid #eee;
-      height: auto;
-    }
-    #zefaker-editor {
-      display: block;
-    }
-    
-  </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zefaker Web</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/codemirror.css">
+    <script src="js/codemirror.js"></script>
+    <script src="js/groovy.js"></script>
+    <script src="js/matchbrackets.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/filesaver.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.js"></script>
 </head>
-
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">zefaker web</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarScroll">
-        <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Examples
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Basic</a></li>
-              <li><a class="dropdown-item" href="#">Advanced</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" target="_blank" href="https://github.com/creditdatamw/zefaker/tree/master/examples">More on GitHub</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" target="_blank" href="https://github.com/creditdatamw/zefaker">GitHub</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container-fluid" id="app-body">
-    <form id="zefaker-form" method="post" action="/generate">
-      <div class="row">
-        <div class="col-md-8">
-          <div id="zefaker-editor">
-            <textarea id="zefaker-editor-textarea" name="code">
-            //            __        _             
-            //  ___ ___  / _| __ _ | |__ ___  _ _ 
-            // |_ // -_)|  _|/ _` || / // -_)| '_|
-            // /__|\___||_|  \__/_||_\_\\___||_|  
-             
+    <div class="row p-3 m-0">
+        <div class="col-12 mb-3">
+            <!-- <button class="btn btn-sm btn-light">File</button> -->
+            
+            <!-- <button class="btn btn-sm btn-light" onclick="exportData()">Export</button> -->
               
-
-// This is an example, you can put your code here
-import java.util.concurrent.atomic.AtomicInteger
-
-autoIncrementID = new AtomicInteger(0)
-
-id        = column(index= 0, name= "id")
-firstName = column(index= 1, name= "firstName")
-lastName  = column(index= 2, name= "lastName")
-age       = column(index= 3, name= "age")
-userStatus= column(index= 4, name= "userStatus")
-
-generateFrom([
-    (id):{ faker -> autoIncrementID.incrementAndGet() },
-    (firstName): { faker -> faker.name().firstName() },
-    (lastName): { faker -> faker.name().lastName() },
-    (age): { faker -> faker.number().numberBetween(18, 70) },
-    (userStatus): { faker -> faker.options().option("active", "unverified account", "disabled:flagged") }
-])
-            </textarea>
-          </div>
+            <!-- <button class="btn btn-sm btn-light">Save</button> -->
         </div>
-        <div class="col col-md-4">
-          <div class="alert alert-warning">
-            This is still in beta testing, bugs will be present...
-          </div>
-          <div class="card output-options">
-          <div class="card-body">
-            <div class="card-title h4">Generate Data</div>
-            <div class="form">
-              <fieldset name="general-options">
-                <!--div class="mb-3">
-                  <label for="fileName">FileName</label>
-                  <input type="text" class="form-control" name="fileName" placeholder="fileName">
-                </div-->
+        <div class="col-sm-3 bg-light p-2">
+            <h4>Export Settings</h4>
+            <hr>
+            <div class="col">
+                <label for="rows">Number of Records</label>
+                <input type="number" class="form-control" id="numberOfRows" name="numberOfRows" value="100" placeholder="e.g. 100">
+            </div>
 
-                <div class="row">
-                  <div class="col">
-                    <label for="format">Export format</label>
-                    <select id="format" name="format" class="form-select">
-                      <option value="sql">SQL</option>
-                      <option value="csv" selected>CSV</option>
-                      <option value="json">JSON</option>
-                      <option value="jsonl">JSON Lines</option>
-                      <option value="xlsx">Excel</option>
-                    </select>
-                  </div>
-                  <div class="col">
-                    <label for="rows">Number of Records</label>
-                    <input type="number" class="form-control" id="numberOfRows" name="numberOfRows" value="100" placeholder="e.g. 100">
-                  </div>
-                </div>
-                
-              </fieldset>
-      
-              <fieldset>
+            <fieldset>
                 <legend class="h5">SQL Specific options</legend>
                 <div class="mb-3">
                   <label for="tableName">Tablename</label>
@@ -149,129 +58,85 @@ generateFrom([
                   <input type="text" class="form-control" id="sheet" name="sheet" placeholder="Select Sheet Name for Excel files">
                 </div>
               </fieldset>
-            </div>
-            <div class="d-grid gap-2 col-6 mx-auto">
-              <button type="submit" class="btn btn-primary btn-block btn-lg">Generate Data File</button>
-              <button type="button" id="btnSaveScript" class="btn btn-primary btn-sm">Save Script</button>
-            </div>
-          
-            <div class="col-sm-12 col-md-12">
               <hr>
-              Copyright (c) Credit Data CRB Ltd 2021
-            </div>
-          </div>
-          </div>
-          
+              <div class="dropdown float-left mx-2 w-100">
+                <button class="btn btn-success btn-block btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Export
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                  <a class="dropdown-item" onclick="exportData('sql')">SQL</a>
+                  <a class="dropdown-item" href="#!">CSV</a>
+                  <a class="dropdown-item" href="#!">JSON</a>
+                  <a class="dropdown-item" href="#!">JSON Lines</a>
+                  <a class="dropdown-item" href="#!">Excel</a>
+                </div>
+              </div>
+              <center>
+                <small class="my-2 w-100">dashboard v1.0.0</small>
+              </center>
         </div>
-      </div>
-    </form>
-  </div>
-
-  <div id="progressModal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
+        <div class="col-sm-8">
+            <button class="btn btn-sm btn-light" data-toggle="modal" data-target="#exampleModal3">New Column +</button>
+            <div class="row mt-3 mb-3" id="columns-ui">
+            </div>
+            <!-- <textarea id="groovy-output" cols="30" rows="10"></textarea> -->
+        </div>
+    </div>
+</body>
+</html>  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModal3Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Processing ...</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="exampleModal3Label">Column Wizzard</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
         </div>
-        <div class="modal-body text-center">
-          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Please wait while processing your request...</span></div>
+        <div class="modal-body">
+            <small>column name</small>
+            <input type="text" id="zf-column-name" class="form-control" placeholder="column name">
+            <small>Zefaker Data Type</small>
+            <select  id="zf-data-type" onchange="dataTypeChanged(event)" class="custom-select">
+              <option disabled selected>Select Data Type</option>
+              <option>Auto Increment Value</option>
+              <option>First Name</option>
+              <option>Last Name</option>
+              <option value="number_range">Number Range</option>
+              <option value="string_options">String Options</option>
+            </select>
+            <div id="zefaker-range" style="display: none;">
+              <small>Zefaker Range</small>
+              <br>
+              <small>From</small>
+              <input type="number" class="form-control" id="zefaker-range-from">
+              <br>
+              <small>To</small>
+              <input type="number" class="form-control" id="zefaker-range-to">
+            </div>
+
+            <div id="zefaker-string-options" style="display: none;">
+              <small>Options, separated by comma</small>
+              <input type="text" class="form-control" id="zefaker-string-option">
+            </div>
+            
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="createNewColumn()">Add</button>
         </div>
       </div>
     </div>
   </div>
   
-
-  <script type="text/javascript">
-    const spinnerHtml = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Please wait while processing your request...</span></div>';
-
-    var editor = CodeMirror.fromTextArea(document.getElementById("zefaker-editor-textarea"), {
+<script src="js/column.js"></script>
+<script src="js/zefaker.js"></script>
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("groovy-output"), {
       lineNumbers: true,
       matchBrackets: true,
       mode: "text/x-groovy",
       height: '500px'
     });
-    
-    var progressModalEl = document.getElementById('progressModal'),
-      progressModal = new bootstrap.Modal(document.getElementById('progressModal')),
-      modalBody = progressModalEl.querySelector('.modal-body'),
-      btnSaveScript = document.getElementById("btnSaveScript");
-
-    // Save script handler
-    btnSaveScript.addEventListener('click', (event) => {
-      event.preventDefault();
-      var scriptBlob = new Blob([editor.getValue()], {type: "text/groovy;charset=utf-8"});
-      saveAs(scriptBlob, "zefaker.groovy");
-
-      return false;
-    })
-
-    // Handler for the form
-    document.getElementById('zefaker-form').addEventListener("submit", (event) => {
-      event.preventDefault();
-      
-      modalBody.innerHTML = spinnerHtml
-
-      progressModal.show()
-
-      const format = document.getElementById('format').value;
-      let formData = {
-        fileName: "data." + format,
-        code: editor.getValue(),
-        format: format,
-        sheet: document.getElementById('sheet').value,
-        sqlquote: document.getElementById('sqlquote').value,
-        rows: document.getElementById('numberOfRows').value,
-        table: document.getElementById('table').value,
-      }
-
-      const url = "/generate";
-
-      axios({
-            method: 'post',
-            type: 'json',
-            url: url,
-            data: JSON.stringify(formData),
-            responseType: 'blob',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/octet-stream;charset=utf-8,application/json'
-            }
-        })
-        .then(function checkStatus(response) {
-            if (response.status != 200) {
-                let error = new Error(response.statusText);
-                error.response = response;
-                throw error;
-            }
-            return response;    
-        })
-        .then(response => {
-          
-          saveAs(response.data, formData.fileName);
-          progressModal.hide()
-        })
-        .catch(err => {
-          modalBody.innerHTML = '<div class="error hidden">Failed to generate file: ' + err + '</div>'
-          // progressModal.hide()
-            // General conenction error
-            if ('response' in err) {
-                const response = err.response;
-                if (response.status === 409) {
-                    return Promise.resolve({
-                        message: 'File uploaded already exists on the server',
-                        fileAlreadyExists: true
-                    });
-                }
-            }
-        });
-        
-        return false;
-      });
-  </script>
-</body>
-
-</html>
+</script>
